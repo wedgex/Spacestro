@@ -17,6 +17,10 @@ namespace Spacestro
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Player player;
+        Viewport viewport;
+        GameCamera cam;
+        int worldWidth = 2000;
+        int worldHeight = 2000;
 
         KeyboardState currentKeyboardState;
         KeyboardState previousKeyboardState;
@@ -24,13 +28,16 @@ namespace Spacestro
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            
             Content.RootDirectory = "Content";
         }
 
         protected override void Initialize()
         {
             player = new Player();
-
+            viewport = graphics.GraphicsDevice.Viewport;
+            cam = new GameCamera(viewport, worldWidth, worldHeight);
+            cam.Pos = player.positionVector;
             base.Initialize();
         }
 
@@ -57,7 +64,14 @@ namespace Spacestro
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            spriteBatch.Begin();
+            //spriteBatch.Begin();
+            spriteBatch.Begin(SpriteSortMode.BackToFront,
+                        BlendState.AlphaBlend,
+                        null,
+                        null,
+                        null,
+                        null,
+                        cam.getTransformation());
 
             player.Draw(spriteBatch);
 
@@ -88,6 +102,7 @@ namespace Spacestro
         protected void handlePlayerMoving() 
         {
             player.positionVector += player.velocity;
+            cam.Pos = player.positionVector;
         }
 
         protected override void UnloadContent() { }
