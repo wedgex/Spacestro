@@ -8,7 +8,7 @@ namespace Spacestro
     public class GameCamera
     {
         private Matrix transform;
-        private Vector2 pos;
+        private Vector2 pos, origin;
         private int viewportWidth;
         private int viewportHeight;
         private int worldWidth;
@@ -18,6 +18,7 @@ namespace Spacestro
            int _worldHeight)
         {
             pos = Vector2.Zero;
+            origin = new Vector2(viewport.Width * 0.5f, viewport.Height * 0.5f);
             viewportWidth = viewport.Width;
             viewportHeight = viewport.Height;
             worldWidth = _worldWidth;
@@ -53,9 +54,8 @@ namespace Spacestro
         public Matrix getTransformation()
         {
             transform =
-               Matrix.CreateTranslation(new Vector3(-pos.X, -pos.Y, 0)) *
-               Matrix.CreateTranslation(new Vector3(viewportWidth * 0.5f,
-                   viewportHeight * 0.5f, 0));
+               Matrix.CreateTranslation(new Vector3(-pos, 0)) *
+               Matrix.CreateTranslation(new Vector3(origin, 0));
 
             return transform;
         }

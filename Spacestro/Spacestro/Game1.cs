@@ -21,6 +21,10 @@ namespace Spacestro
         GameCamera cam;
         int worldWidth = 2000;
         int worldHeight = 2000;
+        int windowHeight = 768;
+        int windowWidth = 1024;
+
+        Texture2D bg1, bg2, asteroid;
 
         KeyboardState currentKeyboardState;
         KeyboardState previousKeyboardState;
@@ -28,7 +32,8 @@ namespace Spacestro
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            
+            graphics.PreferredBackBufferHeight = windowHeight;
+            graphics.PreferredBackBufferWidth = windowWidth;
             Content.RootDirectory = "Content";
         }
 
@@ -47,6 +52,9 @@ namespace Spacestro
 
             Vector2 playerPosition = new Vector2(GraphicsDevice.Viewport.TitleSafeArea.X + GraphicsDevice.Viewport.TitleSafeArea.Width / 2, GraphicsDevice.Viewport.TitleSafeArea.Y + GraphicsDevice.Viewport.TitleSafeArea.Height / 2);
             player.Initialize(Content.Load<Texture2D>("player"), playerPosition);
+            bg1 = Content.Load<Texture2D>("bg1");
+            bg2 = Content.Load<Texture2D>("bg2");
+            asteroid = Content.Load<Texture2D>("asteroid");
         }
 
         protected override void Update(GameTime gameTime)
@@ -63,19 +71,34 @@ namespace Spacestro
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-            //spriteBatch.Begin();
-            spriteBatch.Begin(SpriteSortMode.BackToFront,
-                        BlendState.AlphaBlend,
-                        null,
-                        null,
-                        null,
-                        null,
-                        cam.getTransformation());
+            GraphicsDevice.Clear(Color.Black);
+
+            // first batch containing bg1
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
+                        SamplerState.LinearWrap, null, null, null, GameMath.getBG1ParallaxTranslation(viewport, cam));
+
+            spriteBatch.Draw(bg1, Vector2.Zero, new Rectangle(0,0, worldWidth, worldHeight), Color.White);
+            spriteBatch.End();
+            
+            // second batch cotaining bg2
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
+                        SamplerState.LinearWrap, null, null, null, GameMath.getBG2ParallaxTranslation(viewport, cam));
+
+            spriteBatch.Draw(bg2, Vector2.Zero, new Rectangle(0,0, worldWidth, worldHeight), Color.White);
+            spriteBatch.End();
+
+            // third batch containing player
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, 
+                        null, null, null,null, cam.getTransformation());
+
+            
 
             player.Draw(spriteBatch);
-
+            spriteBatch.Draw(asteroid, new Vector2(600, 600), new Rectangle(0, 0, asteroid.Width, asteroid.Height), Color.White);
             spriteBatch.End();
+
+            
+
             base.Draw(gameTime);
         }
 
