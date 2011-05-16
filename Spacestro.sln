@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010 Express for Windows Phone
+# Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spacestro", "Spacestro\Spacestro\Spacestro.csproj", "{D18A15C2-754B-4962-A507-EB1236A16F4B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpacestroContent", "Spacestro\SpacestroContent\SpacestroContent.contentproj", "{0F49B0E8-17B2-43F7-BE32-427E920E564E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spacestro.Server", "Spacestro.Server\Spacestro.Server.csproj", "{9E63E4C0-41A6-4D0E-9562-E047D416EB11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spacestro.Entities", "Spacestro.Entities\Spacestro.Entities.csproj", "{57935BE8-9F72-4228-A268-F672F6E7540F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +22,14 @@ Global
 		{0F49B0E8-17B2-43F7-BE32-427E920E564E}.Debug|x86.ActiveCfg = Debug|x86
 		{0F49B0E8-17B2-43F7-BE32-427E920E564E}.Release|x86.ActiveCfg = Release|x86
 		{0F49B0E8-17B2-43F7-BE32-427E920E564E}.Release|x86.Build.0 = Release|x86
+		{9E63E4C0-41A6-4D0E-9562-E047D416EB11}.Debug|x86.ActiveCfg = Debug|x86
+		{9E63E4C0-41A6-4D0E-9562-E047D416EB11}.Debug|x86.Build.0 = Debug|x86
+		{9E63E4C0-41A6-4D0E-9562-E047D416EB11}.Release|x86.ActiveCfg = Release|x86
+		{9E63E4C0-41A6-4D0E-9562-E047D416EB11}.Release|x86.Build.0 = Release|x86
+		{57935BE8-9F72-4228-A268-F672F6E7540F}.Debug|x86.ActiveCfg = Debug|x86
+		{57935BE8-9F72-4228-A268-F672F6E7540F}.Debug|x86.Build.0 = Debug|x86
+		{57935BE8-9F72-4228-A268-F672F6E7540F}.Release|x86.ActiveCfg = Release|x86
+		{57935BE8-9F72-4228-A268-F672F6E7540F}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

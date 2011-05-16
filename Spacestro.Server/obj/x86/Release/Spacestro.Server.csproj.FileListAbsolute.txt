@@ -1,0 +1,7 @@
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Server\bin\Release\Spacestro.Server.exe
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Server\bin\Release\Spacestro.Server.pdb
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Server\obj\x86\Release\ResolveAssemblyReference.cache
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Server\obj\x86\Release\Spacestro.Server.exe
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Server\obj\x86\Release\Spacestro.Server.pdb
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Server\bin\Release\Spacestro.Entities.dll
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Server\bin\Release\Spacestro.Entities.pdb

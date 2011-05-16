@@ -1,0 +1,6 @@
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Entities\bin\x86\Release\Spacestro.Entities.dll
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Entities\bin\x86\Release\Spacestro.Entities.pdb
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Entities\obj\x86\Release\ResolveAssemblyReference.cache
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Entities\obj\x86\Release\Microsoft.Xna.Framework.RuntimeProfile.txt
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Entities\obj\x86\Release\Spacestro.Entities.dll
+C:\Users\wedge\Documents\Visual Studio 2010\Projects\Spacestro\Spacestro.Entities\obj\x86\Release\Spacestro.Entities.pdb

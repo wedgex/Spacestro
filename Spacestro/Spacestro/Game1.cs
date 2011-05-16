@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Spacestro.game_obj;
+using System.Net.Sockets;
+using System.Text;
 
 namespace Spacestro
 {
@@ -42,7 +44,8 @@ namespace Spacestro
             player = new Player();
             viewport = graphics.GraphicsDevice.Viewport;
             cam = new GameCamera(viewport, worldWidth, worldHeight);
-            cam.Pos = player.positionVector;
+            cam.Pos = this.player.Position;
+            ServerMessenger.Instance.MessageRecieved += new EventHandler(Server_MessageRecieved);
             base.Initialize();
         }
 
@@ -63,8 +66,8 @@ namespace Spacestro
             previousKeyboardState = currentKeyboardState;
             currentKeyboardState = Keyboard.GetState();
 
-            handleKeyboardInput();
-            handlePlayerMoving();
+            HandleKeyboardInput();
+            HandlePlayerMoving();
 
             base.Update(gameTime);
         }
@@ -92,40 +95,47 @@ namespace Spacestro
                         null, null, null,null, cam.getTransformation());
 
             
-
             player.Draw(spriteBatch);
             spriteBatch.Draw(asteroid, new Vector2(600, 600), new Rectangle(0, 0, asteroid.Width, asteroid.Height), Color.White);
             spriteBatch.End();
 
             
-
             base.Draw(gameTime);
         }
 
-        protected void handleKeyboardInput()
+        protected void HandleKeyboardInput()
         {
-            if (currentKeyboardState.IsKeyDown(Keys.Left)) // counter-clockwise
+            if (currentKeyboardState.IsKeyDown(Keys.Left) || currentKeyboardState.IsKeyDown(Keys.A))
             {
-                GameMath.turnLeft(player);
+                //this.player.TurnLeft();
+                ServerMessenger.Instance.SendMessage(ClientMessages.TurnLeft);
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Right)) // clockwise
+            if (currentKeyboardState.IsKeyDown(Keys.Right) || currentKeyboardState.IsKeyDown(Keys.D)) 
             {
-                GameMath.turnRight(player);
+                //this.player.TurnRight();
+                ServerMessenger.Instance.SendMessage(ClientMessages.TurnRight);
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Up)) // speed up
+            if (currentKeyboardState.IsKeyDown(Keys.Up) || currentKeyboardState.IsKeyDown(Keys.W)) 
             {
-                GameMath.increasePlayerSpeed(player);
+                //this.player.Accelerate();                
+                ServerMessenger.Instance.SendMessage(ClientMessages.Accelerate);
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Down)) // slow down
+            if (currentKeyboardState.IsKeyDown(Keys.Down) || currentKeyboardState.IsKeyDown(Keys.S)) 
             {
-                GameMath.decreasePlayerSpeed(player);
+                //this.player.Decelerate();
+                ServerMessenger.Instance.SendMessage(ClientMessages.Decelerate);
             }
         }
 
-        protected void handlePlayerMoving() 
+        protected void HandlePlayerMoving() 
         {
-            player.positionVector += player.velocity;
-            cam.Pos = player.positionVector;
+            //this.player.Move();
+            this.cam.Pos = this.player.Position;
+        }
+
+        void Server_MessageRecieved(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         protected override void UnloadContent() { }
