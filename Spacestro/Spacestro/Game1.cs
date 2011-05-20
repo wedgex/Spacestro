@@ -44,8 +44,7 @@ namespace Spacestro
             player = new Player();
             viewport = graphics.GraphicsDevice.Viewport;
             cam = new GameCamera(viewport, worldWidth, worldHeight);
-            cam.Pos = this.player.Position;
-            ServerMessenger.Instance.MessageRecieved += new EventHandler(Server_MessageRecieved);
+            cam.Pos = this.player.Position;            
             base.Initialize();
         }
 
@@ -107,29 +106,25 @@ namespace Spacestro
         {
             if (currentKeyboardState.IsKeyDown(Keys.Left) || currentKeyboardState.IsKeyDown(Keys.A))
             {
-                //this.player.TurnLeft();
-                ServerMessenger.Instance.SendMessage(ClientMessages.TurnLeft);
+                this.player.TurnLeft();                
             }
             if (currentKeyboardState.IsKeyDown(Keys.Right) || currentKeyboardState.IsKeyDown(Keys.D)) 
             {
-                //this.player.TurnRight();
-                ServerMessenger.Instance.SendMessage(ClientMessages.TurnRight);
+                this.player.TurnRight();                
             }
             if (currentKeyboardState.IsKeyDown(Keys.Up) || currentKeyboardState.IsKeyDown(Keys.W)) 
             {
-                //this.player.Accelerate();                
-                ServerMessenger.Instance.SendMessage(ClientMessages.Accelerate);
+                this.player.Accelerate();                              
             }
             if (currentKeyboardState.IsKeyDown(Keys.Down) || currentKeyboardState.IsKeyDown(Keys.S)) 
             {
-                //this.player.Decelerate();
-                ServerMessenger.Instance.SendMessage(ClientMessages.Decelerate);
+                this.player.Decelerate();                
             }
         }
 
         protected void HandlePlayerMoving() 
         {
-            //this.player.Move();
+            this.player.Move();
             this.cam.Pos = this.player.Position;
         }
 

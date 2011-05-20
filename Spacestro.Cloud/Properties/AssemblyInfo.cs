@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Spacestro.Server")]
+[assembly: AssemblyTitle("Spacestro.Cloud")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Spacestro.Server")]
+[assembly: AssemblyProduct("Spacestro.Cloud")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("1c0fc39c-9913-4b57-aabc-690beb51ed82")]
+[assembly: Guid("7248e054-d04e-4a42-b9f1-2db89359e78b")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9E63E4C0-41A6-4D0E-9562-E047D416EB11}</ProjectGuid>
+    <ProjectGuid>{84E5454D-966B-464C-A466-54776C4BF90E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Spacestro.Server</RootNamespace>
-    <AssemblyName>Spacestro.Server</AssemblyName>
+    <RootNamespace>Spacestro.Cloud</RootNamespace>
+    <AssemblyName>Spacestro.Cloud</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -34,7 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,13 +45,6 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Spacestro.Entities\Spacestro.Entities.csproj">
-      <Project>{57935BE8-9F72-4228-A268-F672F6E7540F}</Project>
-      <Name>Spacestro.Entities</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
