@@ -32,7 +32,7 @@ namespace Spacestro
         KeyboardState currentKeyboardState;
         KeyboardState previousKeyboardState;
 
-        NetClient netClient;
+        private CloudMessenger cloudMessenger;
 
         public Game1()
         {
@@ -41,13 +41,10 @@ namespace Spacestro
             graphics.PreferredBackBufferWidth = windowWidth;
             Content.RootDirectory = "Content";
 
-            // TODO abstract this out.
-            NetPeerConfiguration config = new NetPeerConfiguration("spacestro");            
-            config.EnableMessageType(NetIncomingMessageType.DiscoveryResponse);
-
-            netClient = new NetClient(config);
-            netClient.Start();
+            this.cloudMessenger = new CloudMessenger("spacestro");           
         }
+
+
 
         protected override void Initialize()
         {
@@ -56,10 +53,14 @@ namespace Spacestro
             cam = new GameCamera(viewport, worldWidth, worldHeight);
             cam.Pos = this.player.Position;
 
-            //TODO need to load this from config or something. Also, how the fuck does it know the ip?
-            this.netClient.DiscoverLocalPeers(8383);
+            this.cloudMessenger.MessageRecieved += new EventHandler<NetIncomingMessageRecievedEventArgs>(cloudMessenger_MessageRecieved);
 
             base.Initialize();
+        }
+
+        void cloudMessenger_MessageRecieved(object sender, NetIncomingMessageRecievedEventArgs e)
+        {
+            NetIncomingMessage msg = e.Message;
         }
 
         protected override void LoadContent()
@@ -82,7 +83,8 @@ namespace Spacestro
             HandleKeyboardInput();
             HandlePlayerMoving();
 
-            RecieveServerMessages();
+            this.cloudMessenger.CheckForNewMessages();
+
             base.Update(gameTime);
         }
 
@@ -131,48 +133,19 @@ namespace Spacestro
             if (currentKeyboardState.IsKeyDown(Keys.Up)) 
             {
                 this.player.Accelerate();
-                NetOutgoingMessage msg = netClient.CreateMessage();
-                msg.Write(true); // TODO just sending a test message. will have to handle real messages.
-                this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);                
+                this.cloudMessenger.SendMessage(true);             
             }
             if (currentKeyboardState.IsKeyDown(Keys.Down)) 
             {
                 this.player.Decelerate();                
             }
-        }
-
-        private void RecieveServerMessages()
-        {
-            NetIncomingMessage msg;
-            while ((msg = this.netClient.ReadMessage()) != null)
-            {
-                switch (msg.MessageType)
-                {
-                    case NetIncomingMessageType.DiscoveryResponse:
-                        // just connect to first server discovered
-                        // TODO is there anything that needs to be done differently here?
-                        this.netClient.Connect(msg.SenderEndpoint);
-                        break;
-                    case NetIncomingMessageType.Data:
-                        // TODO handle messages recieved.
-                        // HACK just putting this so i can have a breakpoint here.
-                        string x = "";
-                        break;
-                }
-            }
-        }
-
+        }        
 
         protected void HandlePlayerMoving() 
         {
             this.player.Move();
             this.cam.Pos = this.player.Position;
-        }
-
-        void Server_MessageRecieved(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
+        }       
 
         protected override void UnloadContent() { }
     }

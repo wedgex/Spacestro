@@ -124,6 +124,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CloudMessenger.cs" />
     <Compile Include="GameCamera.cs" />
     <Compile Include="game_obj\Player.cs" />
     <Compile Include="GameMath.cs" />
