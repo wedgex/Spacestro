@@ -120,22 +120,22 @@ namespace Spacestro
 
         protected void HandleKeyboardInput()
         {
-            if (currentKeyboardState.IsKeyDown(Keys.Left) || currentKeyboardState.IsKeyDown(Keys.A))
+            if (currentKeyboardState.IsKeyDown(Keys.Left))
             {
                 this.player.TurnLeft();                
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Right) || currentKeyboardState.IsKeyDown(Keys.D)) 
+            if (currentKeyboardState.IsKeyDown(Keys.Right)) 
             {
                 this.player.TurnRight();                
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Up) || currentKeyboardState.IsKeyDown(Keys.W)) 
+            if (currentKeyboardState.IsKeyDown(Keys.Up)) 
             {
                 this.player.Accelerate();
                 NetOutgoingMessage msg = netClient.CreateMessage();
                 msg.Write(true); // TODO just sending a test message. will have to handle real messages.
                 this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);                
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Down) || currentKeyboardState.IsKeyDown(Keys.S)) 
+            if (currentKeyboardState.IsKeyDown(Keys.Down)) 
             {
                 this.player.Decelerate();                
             }
