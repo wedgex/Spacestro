@@ -9,7 +9,7 @@ namespace Spacestro.Entities
 {
     public class Player
     {
-        
+
         public Vector2 Position { get; set; }
         public Vector2 Velocity { get; set; }
         public float Acceleration { get; set; }
@@ -23,12 +23,13 @@ namespace Spacestro.Entities
             this.TurnSpeed = 0.1f;
             this.MaxSpeed = 4.0f;
             this.Rotation = 0.0f;
+            this.Velocity = Vector2.Zero;
+            this.Position = Vector2.Zero;
         }
 
-        public Player(Vector2 position) 
-            : this()
+        public Player(Vector2 position) : this()
         {
-            this.Position = position;            
+            this.Position = position;
         }
 
         /// <summary>
@@ -41,7 +42,7 @@ namespace Spacestro.Entities
             if (tempVelocity.Length() >= this.MaxSpeed)
             {
                 tempVelocity.Normalize();
-                tempVelocity = new Vector2(tempVelocity.X * this.MaxSpeed, tempVelocity.Y + this.MaxSpeed);
+                tempVelocity = new Vector2(tempVelocity.X * this.MaxSpeed, tempVelocity.Y * this.MaxSpeed);
             }
 
             this.Velocity = tempVelocity;
@@ -56,13 +57,12 @@ namespace Spacestro.Entities
             if (this.Velocity.Length() <= 0.1f)
             {
                 this.Velocity = Vector2.Zero;
+                return;
             }
-            else
-            {
-                Vector2 newV = this.Velocity;
-                newV.Normalize();
-                this.Velocity += new Vector2(-this.Acceleration * newV.X, -this.Acceleration * newV.Y);
-            }
+            Vector2 newV = this.Velocity;
+            newV.Normalize();
+            this.Velocity += new Vector2(-this.Acceleration * newV.X, -this.Acceleration * newV.Y);
+
         }
 
         /// <summary>
