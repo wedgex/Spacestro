@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Media;
 using Spacestro.game_obj;
 using System.Net.Sockets;
 using System.Text;
+using Lidgren.Network;
 
 namespace Spacestro
 {
@@ -31,12 +32,21 @@ namespace Spacestro
         KeyboardState currentKeyboardState;
         KeyboardState previousKeyboardState;
 
+        NetClient netClient;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferHeight = windowHeight;
             graphics.PreferredBackBufferWidth = windowWidth;
             Content.RootDirectory = "Content";
+
+            // TODO abstract this out.
+            NetPeerConfiguration config = new NetPeerConfiguration("spacestro");            
+            config.EnableMessageType(NetIncomingMessageType.DiscoveryResponse);
+
+            netClient = new NetClient(config);
+            netClient.Start();
         }
 
         protected override void Initialize()
@@ -44,7 +54,11 @@ namespace Spacestro
             player = new Player();
             viewport = graphics.GraphicsDevice.Viewport;
             cam = new GameCamera(viewport, worldWidth, worldHeight);
-            cam.Pos = this.player.Position;            
+            cam.Pos = this.player.Position;
+
+            //TODO need to load this from config or something. Also, how the fuck does it know the ip?
+            this.netClient.DiscoverLocalPeers(8383);
+
             base.Initialize();
         }
 
@@ -68,8 +82,10 @@ namespace Spacestro
             HandleKeyboardInput();
             HandlePlayerMoving();
 
+            RecieveServerMessages();
             base.Update(gameTime);
         }
+
 
         protected override void Draw(GameTime gameTime)
         {
@@ -114,13 +130,38 @@ namespace Spacestro
             }
             if (currentKeyboardState.IsKeyDown(Keys.Up) || currentKeyboardState.IsKeyDown(Keys.W)) 
             {
-                this.player.Accelerate();                              
+                this.player.Accelerate();
+                NetOutgoingMessage msg = netClient.CreateMessage();
+                msg.Write(true); // TODO just sending a test message. will have to handle real messages.
+                this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);                
             }
             if (currentKeyboardState.IsKeyDown(Keys.Down) || currentKeyboardState.IsKeyDown(Keys.S)) 
             {
                 this.player.Decelerate();                
             }
         }
+
+        private void RecieveServerMessages()
+        {
+            NetIncomingMessage msg;
+            while ((msg = this.netClient.ReadMessage()) != null)
+            {
+                switch (msg.MessageType)
+                {
+                    case NetIncomingMessageType.DiscoveryResponse:
+                        // just connect to first server discovered
+                        // TODO is there anything that needs to be done differently here?
+                        this.netClient.Connect(msg.SenderEndpoint);
+                        break;
+                    case NetIncomingMessageType.Data:
+                        // TODO handle messages recieved.
+                        // HACK just putting this so i can have a breakpoint here.
+                        string x = "";
+                        break;
+                }
+            }
+        }
+
 
         protected void HandlePlayerMoving() 
         {
