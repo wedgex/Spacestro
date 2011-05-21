@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Lidgren.Network;
 
 namespace Spacestro
@@ -41,7 +38,10 @@ namespace Spacestro
                         this.netClient.Connect(msg.SenderEndpoint);
                         break;
                     case NetIncomingMessageType.Data:
-                        MessageRecieved(this, new NetIncomingMessageRecievedEventArgs(msg));
+                        if (this.MessageRecieved != null)
+                        {
+                            this.MessageRecieved(this, new NetIncomingMessageRecievedEventArgs(msg));
+                        }
                         break;
                 }
             }
@@ -54,19 +54,5 @@ namespace Spacestro
             msg.Write(boolMsg);
             this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);
         }
-    }
-
-
-    /// <summary>
-    /// Event args to use whenever an incoming message arrives.
-    /// </summary>
-    public class NetIncomingMessageRecievedEventArgs : EventArgs
-    {
-        public NetIncomingMessage Message { get; private set; }
-
-        public NetIncomingMessageRecievedEventArgs(NetIncomingMessage msg)
-        {
-            this.Message = msg;
-        }
-    }
+    }   
 }

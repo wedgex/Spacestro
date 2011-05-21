@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Lidgren.Network;
 using System.Threading;
+using Spacestro.Cloud.Library;
 
 namespace Spacestro.Cloud
 {
@@ -11,6 +12,8 @@ namespace Spacestro.Cloud
     {
         private NetServer server;
         private double messagesPerSecond = 30.0;
+
+        public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
 
         public Cloud(string configName, int port)
         {
@@ -57,7 +60,10 @@ namespace Spacestro.Cloud
                             break;
                         case NetIncomingMessageType.Data:
                             Console.WriteLine(string.Format("Message Recivied from: {0}", msg.SenderConnection.RemoteUniqueIdentifier));
-                            this.RecievedDataMessage(msg);
+                            if (this.MessageRecieved != null)
+                            {
+                                this.MessageRecieved(this, new NetIncomingMessageRecievedEventArgs(msg));
+                            }
                             break;
                     }
                 }
@@ -67,7 +73,7 @@ namespace Spacestro.Cloud
                 {
                     foreach (NetConnection connection in server.Connections)
                     {
-                        this.SendMessage(connection);
+                        // TODO Handle broadcasting messages to connected clients.
                     }
                     nextSendUpdates += (1.0 / 30.0);
                 }
@@ -76,17 +82,6 @@ namespace Spacestro.Cloud
             }
 
             Console.WriteLine("Server stopping.");
-        }
-
-        protected virtual void SendMessage(NetConnection connection)
-        {
-            
-        }
-
-        protected virtual void RecievedDataMessage(NetIncomingMessage msg)
-        {
-        }
-
-
+        }            
     }
 }
