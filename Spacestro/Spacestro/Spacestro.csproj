@@ -138,6 +138,10 @@
     <Content Include="GameThumbnail.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Spacestro.Cloud.Library\Spacestro.Cloud.Library.csproj">
+      <Project>{486DE6DE-179B-4308-BECF-FCBADD1C07E7}</Project>
+      <Name>Spacestro.Cloud.Library</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Spacestro.Entities\Spacestro.Entities.csproj">
       <Project>{57935BE8-9F72-4228-A268-F672F6E7540F}</Project>
       <Name>Spacestro.Entities</Name>

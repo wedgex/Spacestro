@@ -12,6 +12,7 @@ using Spacestro.game_obj;
 using System.Net.Sockets;
 using System.Text;
 using Lidgren.Network;
+using Spacestro.Cloud.Library;
 
 namespace Spacestro
 {
@@ -122,22 +123,32 @@ namespace Spacestro
 
         protected void HandleKeyboardInput()
         {
+            InputState state = new InputState(false, false, false, false);
+            
             if (currentKeyboardState.IsKeyDown(Keys.Left))
             {
-                this.player.TurnLeft();                
+                this.player.TurnLeft();
+                state.Left = true;
             }
             if (currentKeyboardState.IsKeyDown(Keys.Right)) 
             {
-                this.player.TurnRight();                
+                this.player.TurnRight();
+                state.Right = true;
             }
             if (currentKeyboardState.IsKeyDown(Keys.Up)) 
             {
                 this.player.Accelerate();
-                this.cloudMessenger.SendMessage(true);             
+                state.Up = true;
             }
             if (currentKeyboardState.IsKeyDown(Keys.Down)) 
             {
-                this.player.Decelerate();                
+                this.player.Decelerate();
+                state.Down = true;
+            }
+
+            if (state.HasKeyDown())
+            {
+                this.cloudMessenger.SendMessage(state);
             }
         }        
 

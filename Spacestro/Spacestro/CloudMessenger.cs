@@ -1,5 +1,6 @@
 ﻿using System;
 using Lidgren.Network;
+using Spacestro.Cloud.Library;
 
 namespace Spacestro
 {
@@ -52,6 +53,17 @@ namespace Spacestro
         {
             NetOutgoingMessage msg = this.netClient.CreateMessage();
             msg.Write(boolMsg);
+            this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);
+        }
+
+        public void SendMessage(Cloud.Library.InputState state)
+        {
+            NetOutgoingMessage msg = this.netClient.CreateMessage();
+            msg.Write((int)CloudMessageType.Keystate);
+            msg.Write(state.Left);
+            msg.Write(state.Up);
+            msg.Write(state.Right);
+            msg.Write(state.Down);
             this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);
         }
     }   

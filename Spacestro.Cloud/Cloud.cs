@@ -75,7 +75,7 @@ namespace Spacestro.Cloud
                     {
                         // TODO Handle broadcasting messages to connected clients.
                     }
-                    nextSendUpdates += (1.0 / 30.0);
+                    nextSendUpdates += (1.0 / messagesPerSecond);
                 }
 
                 Thread.Sleep(1);
