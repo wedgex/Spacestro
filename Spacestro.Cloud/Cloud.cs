@@ -6,6 +6,11 @@ using Lidgren.Network;
 using System.Threading;
 using Spacestro.Cloud.Library;
 
+
+// TODO   NEED TO FIGURE OUT A WAY TO ASSIGN SESSION IDS TO CLIENTS.
+
+
+
 namespace Spacestro.Cloud
 {
     class Cloud
@@ -13,7 +18,7 @@ namespace Spacestro.Cloud
         private NetServer server;
         private double messagesPerSecond = 30.0;
 
-        public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
+        //public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
 
         public Cloud(string configName, int port)
         {
@@ -42,6 +47,9 @@ namespace Spacestro.Cloud
                             // Respond to the discovery request.
                             server.SendDiscoveryResponse(null, msg.SenderEndpoint);
                             break;
+
+
+
                         case NetIncomingMessageType.VerboseDebugMessage:
                         case NetIncomingMessageType.DebugMessage:
                         case NetIncomingMessageType.WarningMessage:
@@ -50,20 +58,38 @@ namespace Spacestro.Cloud
                             // TODO log errors?
                             Console.WriteLine(msg.ReadString());
                             break;
+
+
+
                         case NetIncomingMessageType.StatusChanged:
                             NetConnectionStatus status = (NetConnectionStatus)msg.ReadByte();
                             if (status == NetConnectionStatus.Connected)
                             {
                                 Console.WriteLine(NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier) + " connected!");
-                                // TODO handle connection. Looks like we might can get disconnection messages here. Each connection has a Tag property as well, that we can store an object in.
+                                // TODO Each connection has a Tag property as well, that we can store an object in.
+                            }
+                            else if (status == NetConnectionStatus.Disconnected)
+                            {
+                                // closing client makes it timeout and after a few seconds sends this message?
+                                Console.WriteLine(NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier) + " disconnected!");
+                            }
+                            else if (status == NetConnectionStatus.Disconnecting)
+                            {
+                                // can't get this one to trigger just yet.
+                                Console.WriteLine(NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier) + " disconnecting!");
                             }
                             break;
+
+
+
                         case NetIncomingMessageType.Data:
-                            Console.WriteLine(string.Format("Message Recivied from: {0}", msg.SenderConnection.RemoteUniqueIdentifier));
-                            if (this.MessageRecieved != null)
-                            {
-                                this.MessageRecieved(this, new NetIncomingMessageRecievedEventArgs(msg));
-                            }
+                            Console.WriteLine(string.Format("Message Receivied from: " + NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier)));
+
+                            handleMessage(msg.ReadByte());
+                            //if (this.MessageRecieved != null)
+                            //{
+                            //    this.MessageRecieved(this, new NetIncomingMessageRecievedEventArgs(msg));
+                            //}
                             break;
                     }
                 }
@@ -82,6 +108,21 @@ namespace Spacestro.Cloud
             }
 
             Console.WriteLine("Server stopping.");
-        }            
+        }
+        
+        protected void handleMessage(byte packetId)
+        {
+            switch ((int)packetId)
+            {
+                case 1: // keyboards!
+                    
+                    // TODO: Read the keyboard input, tell the game logic to update player position.
+
+                    break;
+                default:
+                    // unknown packet id
+                    break;
+            }
+        }
     }
 }

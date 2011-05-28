@@ -33,6 +33,8 @@ namespace Spacestro
         KeyboardState currentKeyboardState;
         KeyboardState previousKeyboardState;
 
+        InputState state;
+
         private CloudMessenger cloudMessenger;
 
         public Game1()
@@ -45,16 +47,14 @@ namespace Spacestro
             this.cloudMessenger = new CloudMessenger("spacestro");           
         }
 
-
-
         protected override void Initialize()
         {
             player = new Player();
             viewport = graphics.GraphicsDevice.Viewport;
-            cam = new GameCamera(viewport, worldWidth, worldHeight);
+            cam = new GameCamera(player.Position, viewport, worldWidth, worldHeight);
             cam.Pos = this.player.Position;
 
-            this.cloudMessenger.MessageRecieved += new EventHandler<NetIncomingMessageRecievedEventArgs>(cloudMessenger_MessageRecieved);
+            //this.cloudMessenger.MessageRecieved += new EventHandler<NetIncomingMessageRecievedEventArgs>(cloudMessenger_MessageRecieved);
 
             base.Initialize();
         }
@@ -82,10 +82,9 @@ namespace Spacestro
             currentKeyboardState = Keyboard.GetState();
 
             HandleKeyboardInput();
+            HandleNetworkOut();
+            HandleNetworkIn();
             HandlePlayerMoving();
-
-            this.cloudMessenger.CheckForNewMessages();
-
             base.Update(gameTime);
         }
 
@@ -123,34 +122,42 @@ namespace Spacestro
 
         protected void HandleKeyboardInput()
         {
-            InputState state = new InputState(false, false, false, false);
+            state.resetStates();
             
             if (currentKeyboardState.IsKeyDown(Keys.Left))
             {
-                this.player.TurnLeft();
+                //this.player.TurnLeft();
                 state.Left = true;
             }
             if (currentKeyboardState.IsKeyDown(Keys.Right)) 
             {
-                this.player.TurnRight();
+                //this.player.TurnRight();
                 state.Right = true;
             }
             if (currentKeyboardState.IsKeyDown(Keys.Up)) 
             {
-                this.player.Accelerate();
+                //this.player.Accelerate();
                 state.Up = true;
             }
             if (currentKeyboardState.IsKeyDown(Keys.Down)) 
             {
-                this.player.Decelerate();
+                //this.player.Decelerate();
                 state.Down = true;
             }
+        }
 
+        protected void HandleNetworkOut()
+        {
             if (state.HasKeyDown())
             {
                 this.cloudMessenger.SendMessage(state);
             }
-        }        
+        }
+
+        protected void HandleNetworkIn()
+        {
+            this.cloudMessenger.CheckForNewMessages();
+        }
 
         protected void HandlePlayerMoving() 
         {

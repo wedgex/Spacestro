@@ -14,13 +14,13 @@ namespace Spacestro
         private int worldWidth;
         private int worldHeight;
 
-        public GameCamera(Viewport viewport, int _worldWidth,
+        public GameCamera(Vector2 playerPos, Viewport viewport, int _worldWidth,
            int _worldHeight)
         {
             pos = Vector2.Zero;
-            origin = new Vector2(viewport.Width * 0.5f, viewport.Height * 0.5f);
             viewportWidth = viewport.Width;
             viewportHeight = viewport.Height;
+            origin = new Vector2((float)(playerPos.X + (.5 * viewport.Width)), (float)(playerPos.Y + (.5 * viewport.Height)));
             worldWidth = _worldWidth;
             worldHeight = _worldHeight;
         }
