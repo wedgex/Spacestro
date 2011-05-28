@@ -41,9 +41,11 @@ namespace Spacestro
                 switch (msg.MessageType)
                 {
                     case NetIncomingMessageType.DiscoveryResponse:
-                        // just connect to first server discovered
                         // TODO is there anything that needs to be done differently here?
+                        // after this, we need to tell server our client id to sync us with existing server data if possible
+
                         this.netClient.Connect(msg.SenderEndpoint);
+
                         break;
                     case NetIncomingMessageType.Data:
 
@@ -58,15 +60,18 @@ namespace Spacestro
             }
         }
 
-        // TODO will need overrides for the different types of messages we can send. Just doing a simple bool for now to test with.
-        //public void SendMessage(bool boolMsg)
-        //{
-        //    NetOutgoingMessage msg = this.netClient.CreateMessage();
-        //    msg.Write(boolMsg);
-        //    this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);
-        //}
+        // PacketID 0
+        // sends client ID to the server
+        public void SendMessage(String id)
+        {
+            NetOutgoingMessage msg = this.netClient.CreateMessage();
+            msg.Write((byte)0);
+            msg.Write(id);
+            this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);
+        }
 
-        // sends keyboard message PacketID 1
+        // PacketID 1
+        // sends keyboard message 
         public void SendMessage(Cloud.Library.InputState state)
         {
             NetOutgoingMessage msg = this.netClient.CreateMessage();
@@ -84,5 +89,7 @@ namespace Spacestro
             }
             this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);
         }
+
+        
     }
 }

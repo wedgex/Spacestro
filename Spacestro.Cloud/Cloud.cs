@@ -83,9 +83,9 @@ namespace Spacestro.Cloud
 
 
                         case NetIncomingMessageType.Data:
-                            Console.WriteLine(string.Format("Message Receivied from: " + NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier)));
+                            Console.WriteLine(string.Format("got msg from: " + NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier)));
 
-                            handleMessage(msg.ReadByte());
+                            handleMessage(msg);
                             //if (this.MessageRecieved != null)
                             //{
                             //    this.MessageRecieved(this, new NetIncomingMessageRecievedEventArgs(msg));
@@ -109,15 +109,22 @@ namespace Spacestro.Cloud
 
             Console.WriteLine("Server stopping.");
         }
-        
-        protected void handleMessage(byte packetId)
+
+        protected void handleMessage(NetIncomingMessage msg)
         {
-            switch ((int)packetId)
+            int packetId = msg.ReadByte();
+            Console.WriteLine(packetId);
+
+            switch (packetId)
             {
+                case 0: // client ID!
+
+                    // TODO: Read the client ID, dictionary that ho to the session id assigned by cloud.
+                    Console.WriteLine(msg.ReadString());
+                    break;
                 case 1: // keyboards!
                     
                     // TODO: Read the keyboard input, tell the game logic to update player position.
-
                     break;
                 default:
                     // unknown packet id
