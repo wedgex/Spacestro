@@ -28,9 +28,6 @@ namespace Spacestro
         int windowHeight = 768;
         int windowWidth = 1024;
 
-        bool isIDsent = false;
-        private String client_id = "dereksucks420";
-
         Texture2D bg1, bg2, asteroid;
 
         KeyboardState currentKeyboardState;
@@ -151,14 +148,6 @@ namespace Spacestro
 
         protected void HandleNetworkOut()
         {
-            // this currently sends too fast or something while the connection is still trying to be created?
-            // if you take this if statement and shove it in state if statement, it works
-            if (!isIDsent)
-            {
-                this.cloudMessenger.SendMessage(client_id);
-                isIDsent = true;
-            }
-
             if (state.HasKeyDown())
             {
                 this.cloudMessenger.SendMessage(state);

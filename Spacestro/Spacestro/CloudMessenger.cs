@@ -15,6 +15,8 @@ namespace Spacestro
     {
         private NetClient netClient;
 
+        private String client_id = "dereksucks420";
+
         //public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
 
         public CloudMessenger(string configName)
@@ -41,15 +43,13 @@ namespace Spacestro
                 switch (msg.MessageType)
                 {
                     case NetIncomingMessageType.DiscoveryResponse:
-                        // TODO is there anything that needs to be done differently here?
-                        // after this, we need to tell server our client id to sync us with existing server data if possible
-
                         this.netClient.Connect(msg.SenderEndpoint);
-
                         break;
                     case NetIncomingMessageType.Data:
 
-                        // read message for new position
+                        handleMessage(msg);
+                        // TODO: need to look for server telling us to send over the client id
+                        // TODO: or read message for new position
 
                         //if (this.MessageRecieved != null)
                         //{
@@ -57,6 +57,23 @@ namespace Spacestro
                         //}
                         break;
                 }
+            }
+        }
+
+        protected void handleMessage(NetIncomingMessage msg)
+        {
+            int packetId = msg.ReadByte();
+
+            switch (packetId)
+            {
+                case 99: // server wants client ID!
+
+                    SendMessage(client_id);
+
+                    break;
+                default:
+                    // unknown packet id
+                    break;
             }
         }
 
@@ -90,6 +107,6 @@ namespace Spacestro
             this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);
         }
 
-        
+
     }
 }

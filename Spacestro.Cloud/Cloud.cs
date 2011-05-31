@@ -17,6 +17,7 @@ namespace Spacestro.Cloud
     {
         private NetServer server;
         private double messagesPerSecond = 30.0;
+        private String value = null;
 
         //public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
 
@@ -26,7 +27,7 @@ namespace Spacestro.Cloud
             config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
             config.Port = port;
 
-            this.server = new NetServer(config); 
+            this.server = new NetServer(config);
         }
 
         public void Start()
@@ -66,7 +67,6 @@ namespace Spacestro.Cloud
                             if (status == NetConnectionStatus.Connected)
                             {
                                 Console.WriteLine(NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier) + " connected!");
-                                // TODO Each connection has a Tag property as well, that we can store an object in.
                             }
                             else if (status == NetConnectionStatus.Disconnected)
                             {
@@ -83,7 +83,7 @@ namespace Spacestro.Cloud
 
 
                         case NetIncomingMessageType.Data:
-                            Console.WriteLine(string.Format("got msg from: " + NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier)));
+                            //Console.WriteLine(string.Format("got msg from: " + NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier)));
 
                             handleMessage(msg);
                             //if (this.MessageRecieved != null)
@@ -99,7 +99,17 @@ namespace Spacestro.Cloud
                 {
                     foreach (NetConnection connection in server.Connections)
                     {
+                        // storing client id in Tag.  If it's null, ask client to send it over.
+                        if (connection.Tag == null)
+                        {
+                            NetOutgoingMessage sendMsg = server.CreateMessage();
+                            sendMsg.Write((byte)99);
+                            server.SendMessage(sendMsg, connection, NetDeliveryMethod.ReliableUnordered);
+                        }
+
+
                         // TODO Handle broadcasting messages to connected clients.
+
                     }
                     nextSendUpdates += (1.0 / messagesPerSecond);
                 }
@@ -113,18 +123,18 @@ namespace Spacestro.Cloud
         protected void handleMessage(NetIncomingMessage msg)
         {
             int packetId = msg.ReadByte();
-            Console.WriteLine(packetId);
+            // Console.WriteLine(packetId);
 
             switch (packetId)
             {
                 case 0: // client ID!
-
+                    msg.SenderConnection.Tag = msg.ReadString();
                     // TODO: Read the client ID, dictionary that ho to the session id assigned by cloud.
-                    Console.WriteLine(msg.ReadString());
+                    Console.WriteLine(msg.SenderConnection.Tag);
                     break;
                 case 1: // keyboards!
-                    
-                    // TODO: Read the keyboard input, tell the game logic to update player position.
+                    InputState inState = new InputState(msg.ReadByte(), msg.ReadByte(), msg.ReadByte(), msg.ReadByte());
+
                     break;
                 default:
                     // unknown packet id
