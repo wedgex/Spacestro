@@ -8,11 +8,11 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using Spacestro.game_obj;
 using System.Net.Sockets;
 using System.Text;
 using Lidgren.Network;
 using Spacestro.Cloud.Library;
+using Spacestro.game_obj;
 
 namespace Spacestro
 {
@@ -161,7 +161,7 @@ namespace Spacestro
 
         protected void HandlePlayerMoving() 
         {
-            this.player.Move();
+            this.player.Move(this.cloudMessenger.svrPos, this.cloudMessenger.svrRot);
             this.cam.Pos = this.player.Position;
         }       
 

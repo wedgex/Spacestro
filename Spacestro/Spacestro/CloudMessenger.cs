@@ -1,8 +1,7 @@
 ﻿using System;
 using Lidgren.Network;
 using Spacestro.Cloud.Library;
-
-
+using Microsoft.Xna.Framework;
 
 
 // TODO   CREATE A UNIQUE ID FOR THIS CLIENT SO SERVER KNOWS WHO THE HELL THIS IS.
@@ -14,7 +13,8 @@ namespace Spacestro
     class CloudMessenger
     {
         private NetClient netClient;
-
+        public Vector2 svrPos = Vector2.Zero;
+        public float svrRot = 0.0f;
         private String client_id = "dereksucks420";
 
         //public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
@@ -70,6 +70,11 @@ namespace Spacestro
 
                     SendMessage(client_id);
 
+                    break;
+                case 5: // position and rotation
+                    svrPos.X = msg.ReadFloat();
+                    svrPos.Y = msg.ReadFloat();
+                    svrRot = msg.ReadFloat();
                     break;
                 default:
                     // unknown packet id

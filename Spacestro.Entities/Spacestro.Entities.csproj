@@ -95,6 +95,12 @@
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Spacestro.Cloud.Library\Spacestro.Cloud.Library.csproj">
+      <Project>{486DE6DE-179B-4308-BECF-FCBADD1C07E7}</Project>
+      <Name>Spacestro.Cloud.Library</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!--

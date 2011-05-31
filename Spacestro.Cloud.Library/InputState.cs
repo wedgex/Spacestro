@@ -19,7 +19,60 @@ namespace Spacestro.Cloud.Library
             {
                 this.Up = true;
             }
-            else 
+            else
+            {
+                this.Up = false;
+            }
+
+            if (down.Equals(1))
+            {
+                this.Down = true;
+            }
+            else
+            {
+                this.Down = false;
+            }
+
+            if (left.Equals(1))
+            {
+                this.Left = true;
+            }
+            else
+            {
+                this.Left = false;
+            }
+
+            if (right.Equals(1))
+            {
+                this.Right = true;
+            }
+            else
+            {
+                this.Right = false;
+            } 
+        }
+
+        public bool HasKeyDown()
+        {
+            return this.Up || this.Down ||this.Left || this.Right;
+        }
+
+        public void resetStates()
+        {
+            this.Up = false;
+            this.Down = false;
+            this.Left = false;
+            this.Right = false;
+            
+        }
+
+        public void setStates(int up, int down, int left, int right)
+        {
+            if (up.Equals(1))
+            {
+                this.Up = true;
+            }
+            else
             {
                 this.Up = false;
             }
@@ -50,20 +103,6 @@ namespace Spacestro.Cloud.Library
             {
                 this.Right = false;
             }
-        }
-
-        public bool HasKeyDown()
-        {
-            return this.Up || this.Down ||this.Left || this.Right;
-        }
-
-        public void resetStates()
-        {
-            this.Up = false;
-            this.Down = false;
-            this.Left = false;
-            this.Right = false;
-            
         }
 
         public bool[] getStateList()

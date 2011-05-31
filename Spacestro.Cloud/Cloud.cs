@@ -5,6 +5,7 @@ using System.Text;
 using Lidgren.Network;
 using System.Threading;
 using Spacestro.Cloud.Library;
+using Spacestro.Entities;
 
 
 // TODO   NEED TO FIGURE OUT A WAY TO ASSIGN SESSION IDS TO CLIENTS.
@@ -17,7 +18,8 @@ namespace Spacestro.Cloud
     {
         private NetServer server;
         private double messagesPerSecond = 30.0;
-        private String value = null;
+        private Player p1;
+        private InputState inState;
 
         //public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
 
@@ -67,6 +69,7 @@ namespace Spacestro.Cloud
                             if (status == NetConnectionStatus.Connected)
                             {
                                 Console.WriteLine(NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier) + " connected!");
+                                p1 = new Player();
                             }
                             else if (status == NetConnectionStatus.Disconnected)
                             {
@@ -106,6 +109,16 @@ namespace Spacestro.Cloud
                             sendMsg.Write((byte)99);
                             server.SendMessage(sendMsg, connection, NetDeliveryMethod.ReliableUnordered);
                         }
+                        else
+                        {
+                            // send player position/rotation
+                            NetOutgoingMessage sendMsg = server.CreateMessage();
+                            sendMsg.Write((byte)5);
+                            sendMsg.Write(p1.Position.X);
+                            sendMsg.Write(p1.Position.Y);
+                            sendMsg.Write(p1.Rotation);
+                            server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
+                        }
 
 
                         // TODO Handle broadcasting messages to connected clients.
@@ -129,12 +142,14 @@ namespace Spacestro.Cloud
             {
                 case 0: // client ID!
                     msg.SenderConnection.Tag = msg.ReadString();
-                    // TODO: Read the client ID, dictionary that ho to the session id assigned by cloud.
                     Console.WriteLine(msg.SenderConnection.Tag);
                     break;
                 case 1: // keyboards!
-                    InputState inState = new InputState(msg.ReadByte(), msg.ReadByte(), msg.ReadByte(), msg.ReadByte());
-
+                    inState.resetStates();
+                    inState.setStates(msg.ReadByte(), msg.ReadByte(), msg.ReadByte(), msg.ReadByte());
+                    p1.handleInputState(inState);
+                    p1.Move();
+                    // tell player new position
                     break;
                 default:
                     // unknown packet id

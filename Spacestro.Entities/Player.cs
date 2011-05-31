@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using Spacestro.Cloud.Library;
 
 namespace Spacestro.Entities
 {
@@ -35,6 +35,18 @@ namespace Spacestro.Entities
             this.Rotation = 0.0f;
             this.Velocity = Vector2.Zero;
             this.Position = position;
+        }
+
+        public void handleInputState(InputState inState)
+        {
+            if (inState.Up)
+                this.Accelerate();
+            if (inState.Down)
+                this.Decelerate();
+            if (inState.Left)
+                this.TurnLeft();
+            if (inState.Right)
+                this.TurnRight();
         }
 
         /// <summary>
@@ -91,6 +103,13 @@ namespace Spacestro.Entities
         /// </summary>
         public void Move()
         {
+            this.Position += this.Velocity;
+        }
+
+        public void Move(Vector2 svrPos, float svrRot)
+        {
+            this.Position = svrPos;
+            this.Rotation = svrRot;
             this.Position += this.Velocity;
         }
     }
