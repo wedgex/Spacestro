@@ -104,6 +104,7 @@ namespace Spacestro.Cloud
                     foreach (NetConnection connection in server.Connections)
                     {
                         // storing client id in Tag.  If it's null, ask client to send it over.
+                        // Also send client it's session id.
                         if (connection.Tag == null)
                         {
                             NetOutgoingMessage sendMsg = server.CreateMessage();
@@ -112,16 +113,20 @@ namespace Spacestro.Cloud
                         }
                         else
                         {
-                            // send player position/rotation
-                            p1 = cloudGC.getPlayer(connection.Tag.ToString());
-                            if (p1 != null)
+                            // tell player of everyone's position including itself.
+                            foreach (NetConnection player in server.Connections)
                             {
-                                NetOutgoingMessage sendMsg = server.CreateMessage();
-                                sendMsg.Write((byte)5);
-                                sendMsg.Write(p1.Position.X);
-                                sendMsg.Write(p1.Position.Y);
-                                sendMsg.Write(p1.Rotation);
-                                server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
+                                if (player.Tag != null)
+                                {
+                                    NetOutgoingMessage sendMsg = server.CreateMessage();
+                                    sendMsg.Write((byte)5);
+                                    sendMsg.Write(player.Tag.ToString());
+                                    p1 = cloudGC.getPlayer(player.Tag.ToString());
+                                    sendMsg.Write(p1.Position.X);
+                                    sendMsg.Write(p1.Position.Y);
+                                    sendMsg.Write(p1.Rotation);
+                                    server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
+                                }
                             }
                         }
 

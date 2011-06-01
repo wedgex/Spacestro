@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using Lidgren.Network;
 using Spacestro.Cloud.Library;
 using Microsoft.Xna.Framework;
+using Spacestro.Entities;
+using System.Collections.Generic;
 
 namespace Spacestro
 {
@@ -10,7 +13,12 @@ namespace Spacestro
         private NetClient netClient;
         public Vector2 svrPos = Vector2.Zero;
         public float svrRot = 0.0f;
-        private String client_id = "dereksucks420";
+        private String svrID = "";
+
+        //private String client_id = "dereksucks420";
+        public String client_id = Path.GetRandomFileName().Replace(".", "");
+        public List<Player> playerList;
+
 
         //public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
 
@@ -25,6 +33,8 @@ namespace Spacestro
 
             //TODO need to load this from config or something.
             this.netClient.DiscoverKnownPeer("localhost", 8383);
+
+            this.playerList = new List<Player>();
         }
 
         /// <summary>
@@ -62,14 +72,24 @@ namespace Spacestro
             switch (packetId)
             {
                 case 99: // server wants client ID!
-
                     SendMessage(client_id);
-
                     break;
-                case 5: // position and rotation
-                    svrPos.X = msg.ReadFloat();
-                    svrPos.Y = msg.ReadFloat();
-                    svrRot = msg.ReadFloat();
+                case 5: // position and rotation of some player (maybe us)
+                    svrID = msg.ReadString();
+
+                    // not in list yet
+                    if (!inPlayerList(svrID))
+                    {
+                        Player newP = new Player();
+                        newP.Name = svrID;
+                        playerList.Add(newP);
+                    }
+                    // in list
+                    else if (inPlayerList(svrID))
+                    {
+                        getPlayer(svrID).Position = new Vector2(msg.ReadFloat(), msg.ReadFloat());
+                        getPlayer(svrID).Rotation = msg.ReadFloat();
+                    }
                     break;
                 default:
                     // unknown packet id
@@ -107,6 +127,27 @@ namespace Spacestro
             this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);
         }
 
+        private bool inPlayerList(String cid)
+        {
+            foreach (Player p in playerList)
+            {
+                if (p.Name.Equals(cid))
+                    return true;
+            }
+            return false;
+        }
 
+        public Player getPlayer(String name)
+        {
+            foreach (Player player in playerList)
+            {
+                if (player.Name.Equals(name))
+                {
+                    return player;
+                }
+            }
+
+            return null;
+        }
     }
 }

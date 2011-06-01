@@ -25,7 +25,7 @@ namespace Spacestro.Entities
             this.MaxSpeed = 8.0f;
             this.Rotation = 0.0f;
             this.Velocity = Vector2.Zero;
-            this.Position = Vector2.Zero;
+            this.Position = new Vector2(40,40);
             this.Name = "";
         }
 

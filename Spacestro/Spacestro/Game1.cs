@@ -13,6 +13,7 @@ using System.Text;
 using Lidgren.Network;
 using Spacestro.Cloud.Library;
 using Spacestro.game_obj;
+using Spacestro.Entities;
 
 namespace Spacestro
 {
@@ -20,7 +21,7 @@ namespace Spacestro
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Player player;
+        Spacestro.game_obj.Player player;
         Viewport viewport;
         GameCamera cam;
         int worldWidth = 2000;
@@ -28,7 +29,7 @@ namespace Spacestro
         int windowHeight = 768;
         int windowWidth = 1024;
 
-        Texture2D bg1, bg2, asteroid;
+        Texture2D bg1, bg2, asteroid, playerTexture;
 
         KeyboardState currentKeyboardState;
         KeyboardState previousKeyboardState;
@@ -44,12 +45,12 @@ namespace Spacestro
             graphics.PreferredBackBufferWidth = windowWidth;
             Content.RootDirectory = "Content";
 
-            this.cloudMessenger = new CloudMessenger("spacestro");           
+            this.cloudMessenger = new CloudMessenger("spacestro");
         }
 
         protected override void Initialize()
         {
-            player = new Player();
+            player = new Spacestro.game_obj.Player();
             viewport = graphics.GraphicsDevice.Viewport;
             cam = new GameCamera(player.Position, viewport, worldWidth, worldHeight);
             cam.Pos = this.player.Position;
@@ -73,6 +74,7 @@ namespace Spacestro
             bg1 = Content.Load<Texture2D>("bg1");
             bg2 = Content.Load<Texture2D>("bg2");
             asteroid = Content.Load<Texture2D>("asteroid");
+            playerTexture = Content.Load<Texture2D>("player");
         }
 
         protected override void Update(GameTime gameTime)
@@ -97,49 +99,59 @@ namespace Spacestro
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
                         SamplerState.LinearWrap, null, null, null, GameMath.getBG1ParallaxTranslation(viewport, cam));
 
-            spriteBatch.Draw(bg1, Vector2.Zero, new Rectangle(0,0, worldWidth, worldHeight), Color.White);
+            spriteBatch.Draw(bg1, Vector2.Zero, new Rectangle(0, 0, worldWidth, worldHeight), Color.White);
             spriteBatch.End();
-            
+
             // second batch cotaining bg2
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
                         SamplerState.LinearWrap, null, null, null, GameMath.getBG2ParallaxTranslation(viewport, cam));
 
-            spriteBatch.Draw(bg2, Vector2.Zero, new Rectangle(0,0, worldWidth, worldHeight), Color.White);
+            spriteBatch.Draw(bg2, Vector2.Zero, new Rectangle(0, 0, worldWidth, worldHeight), Color.White);
             spriteBatch.End();
 
-            // third batch containing player
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, 
-                        null, null, null,null, cam.getTransformation());
+            // third batch containing player and entities
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
+                        null, null, null, null, cam.getTransformation());
 
-            
-            player.Draw(spriteBatch);
+            foreach (Spacestro.Entities.Player p in this.cloudMessenger.playerList)
+            {
+                if (p.Name.Equals(this.cloudMessenger.client_id))
+                {
+                    player.Draw(spriteBatch);
+                }
+                else
+                {
+                    spriteBatch.Draw(playerTexture, p.Position, null, Color.White, p.Rotation, new Vector2((float)(playerTexture.Width / 2), (float)(playerTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
+                }
+            }
+
             spriteBatch.Draw(asteroid, new Vector2(600, 600), new Rectangle(0, 0, asteroid.Width, asteroid.Height), Color.White);
             spriteBatch.End();
 
-            
+
             base.Draw(gameTime);
         }
 
         protected void HandleKeyboardInput()
         {
             state.resetStates();
-            
+
             if (currentKeyboardState.IsKeyDown(Keys.Left))
             {
                 //this.player.TurnLeft();
                 state.Left = true;
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Right)) 
+            if (currentKeyboardState.IsKeyDown(Keys.Right))
             {
                 //this.player.TurnRight();
                 state.Right = true;
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Up)) 
+            if (currentKeyboardState.IsKeyDown(Keys.Up))
             {
                 //this.player.Accelerate();
                 state.Up = true;
             }
-            if (currentKeyboardState.IsKeyDown(Keys.Down)) 
+            if (currentKeyboardState.IsKeyDown(Keys.Down))
             {
                 //this.player.Decelerate();
                 state.Down = true;
@@ -159,11 +171,14 @@ namespace Spacestro
             this.cloudMessenger.CheckForNewMessages();
         }
 
-        protected void HandlePlayerMoving() 
+        protected void HandlePlayerMoving()
         {
-            this.player.Move(this.cloudMessenger.svrPos, this.cloudMessenger.svrRot);
-            this.cam.Pos = this.player.Position;
-        }       
+            if (this.cloudMessenger.getPlayer(this.cloudMessenger.client_id) != null)
+            {
+                this.player.Move(this.cloudMessenger.getPlayer(this.cloudMessenger.client_id).Position, this.cloudMessenger.getPlayer(this.cloudMessenger.client_id).Rotation);
+                this.cam.Pos = this.player.Position;
+            }
+        }
 
         protected override void UnloadContent() { }
     }
