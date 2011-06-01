@@ -3,14 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Lidgren.Network;
-using System.Threading;
 using Spacestro.Cloud.Library;
 using Spacestro.Entities;
-
-
-// TODO   NEED TO FIGURE OUT A WAY TO ASSIGN SESSION IDS TO CLIENTS.
-
-
 
 namespace Spacestro.Cloud
 {
@@ -20,6 +14,7 @@ namespace Spacestro.Cloud
         private double messagesPerSecond = 30.0;
         private Player p1;
         private InputState inState;
+        private CloudGameController cloudGC;
 
         //public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
 
@@ -30,6 +25,8 @@ namespace Spacestro.Cloud
             config.Port = port;
 
             this.server = new NetServer(config);
+
+            cloudGC = new CloudGameController();
         }
 
         public void Start()
@@ -69,7 +66,6 @@ namespace Spacestro.Cloud
                             if (status == NetConnectionStatus.Connected)
                             {
                                 Console.WriteLine(NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier) + " connected!");
-                                p1 = new Player();
                             }
                             else if (status == NetConnectionStatus.Disconnected)
                             {
@@ -100,6 +96,8 @@ namespace Spacestro.Cloud
                 now = NetTime.Now;
                 if (now > nextSendUpdates)
                 {
+                    cloudGC.moveAll();
+
                     foreach (NetConnection connection in server.Connections)
                     {
                         // storing client id in Tag.  If it's null, ask client to send it over.
@@ -112,12 +110,16 @@ namespace Spacestro.Cloud
                         else
                         {
                             // send player position/rotation
-                            NetOutgoingMessage sendMsg = server.CreateMessage();
-                            sendMsg.Write((byte)5);
-                            sendMsg.Write(p1.Position.X);
-                            sendMsg.Write(p1.Position.Y);
-                            sendMsg.Write(p1.Rotation);
-                            server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
+                            p1 = cloudGC.getPlayer(connection.Tag.ToString());
+                            if (p1 != null)
+                            {
+                                NetOutgoingMessage sendMsg = server.CreateMessage();
+                                sendMsg.Write((byte)5);
+                                sendMsg.Write(p1.Position.X);
+                                sendMsg.Write(p1.Position.Y);
+                                sendMsg.Write(p1.Rotation);
+                                server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
+                            }
                         }
 
 
@@ -141,14 +143,18 @@ namespace Spacestro.Cloud
             switch (packetId)
             {
                 case 0: // client ID!
-                    msg.SenderConnection.Tag = msg.ReadString();
-                    Console.WriteLine(msg.SenderConnection.Tag);
+                    if (msg.SenderConnection.Tag == null)
+                    {
+                        msg.SenderConnection.Tag = msg.ReadString();
+                        Console.WriteLine(msg.SenderConnection.Tag.ToString());
+                        cloudGC.addPlayer(msg.SenderConnection.Tag.ToString());
+                    }
                     break;
                 case 1: // keyboards!
                     inState.resetStates();
                     inState.setStates(msg.ReadByte(), msg.ReadByte(), msg.ReadByte(), msg.ReadByte());
-                    p1.handleInputState(inState);
-                    p1.Move();
+                    cloudGC.handleInputState(inState, msg.SenderConnection.Tag.ToString());
+                    cloudGC.move(msg.SenderConnection.Tag.ToString());
                     // tell player new position
                     break;
                 default:

@@ -3,11 +3,6 @@ using Lidgren.Network;
 using Spacestro.Cloud.Library;
 using Microsoft.Xna.Framework;
 
-
-// TODO   CREATE A UNIQUE ID FOR THIS CLIENT SO SERVER KNOWS WHO THE HELL THIS IS.
-
-
-
 namespace Spacestro
 {
     class CloudMessenger

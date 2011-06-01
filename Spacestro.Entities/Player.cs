@@ -16,6 +16,7 @@ namespace Spacestro.Entities
         public float TurnSpeed { get; set; }
         public float MaxSpeed { get; set; }
         public float Rotation { get; set; }
+        public string Name { get; set; }
 
         public Player()
         {
@@ -25,6 +26,7 @@ namespace Spacestro.Entities
             this.Rotation = 0.0f;
             this.Velocity = Vector2.Zero;
             this.Position = Vector2.Zero;
+            this.Name = "";
         }
 
         public Player(Vector2 position) : this()
@@ -35,6 +37,7 @@ namespace Spacestro.Entities
             this.Rotation = 0.0f;
             this.Velocity = Vector2.Zero;
             this.Position = position;
+            this.Name = "";
         }
 
         public void handleInputState(InputState inState)
