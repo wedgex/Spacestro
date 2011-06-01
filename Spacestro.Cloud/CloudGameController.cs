@@ -9,11 +9,25 @@ namespace Spacestro.Cloud
 {
     class CloudGameController
     {
-        List<Player> playerList;
+        public List<Player> playerList;
+        private DateTime pastTime;
 
         public CloudGameController()
         {
             playerList = new List<Player>();
+        }
+
+        public void run()
+        {
+            pastTime = DateTime.Now;
+            while (true)
+            {
+                if (pastTime.AddMilliseconds(2) > DateTime.Now)
+                {
+                    tick();
+                }
+                
+            }
         }
 
         public void tick()

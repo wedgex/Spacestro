@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,7 @@ namespace Spacestro.Cloud
         private Player p1;
         private InputState inState;
         private CloudGameController cloudGC;
+        private Thread thread;
 
         //public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
 
@@ -27,6 +29,7 @@ namespace Spacestro.Cloud
             this.server = new NetServer(config);
 
             cloudGC = new CloudGameController();
+            thread = new Thread(new ThreadStart(cloudGC.run));
         }
 
         public void Start()
@@ -154,7 +157,6 @@ namespace Spacestro.Cloud
                     inState.resetStates();
                     inState.setStates(msg.ReadByte(), msg.ReadByte(), msg.ReadByte(), msg.ReadByte());
                     cloudGC.handleInputState(inState, msg.SenderConnection.Tag.ToString());
-                    cloudGC.move(msg.SenderConnection.Tag.ToString());
                     // tell player new position
                     break;
                 default:
