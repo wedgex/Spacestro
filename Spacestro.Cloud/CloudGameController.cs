@@ -11,22 +11,23 @@ namespace Spacestro.Cloud
     {
         public List<Player> playerList;
         private DateTime pastTime;
+        private int ticksPerSecond = 30;
 
         public CloudGameController()
         {
             playerList = new List<Player>();
         }
 
-        public void run()
+        public void run() // currently ticks at 30/sec.
         {
-            pastTime = DateTime.Now;
+            pastTime = DateTime.Now.AddMilliseconds(60/ticksPerSecond);
             while (true)
             {
-                if (pastTime.AddMilliseconds(2) > DateTime.Now)
+                if (pastTime < DateTime.Now)
                 {
+                    pastTime = DateTime.Now.AddMilliseconds(60 / ticksPerSecond);
                     tick();
-                }
-                
+                }    
             }
         }
 

@@ -22,7 +22,7 @@ namespace Spacestro.Entities
         {
             this.Acceleration = 0.2f;
             this.TurnSpeed = 0.1f;
-            this.MaxSpeed = 4.0f;
+            this.MaxSpeed = 8.0f;
             this.Rotation = 0.0f;
             this.Velocity = Vector2.Zero;
             this.Position = Vector2.Zero;
@@ -33,7 +33,7 @@ namespace Spacestro.Entities
         {
             this.Acceleration = 0.2f;
             this.TurnSpeed = 0.1f;
-            this.MaxSpeed = 4.0f;
+            this.MaxSpeed = 8.0f;
             this.Rotation = 0.0f;
             this.Velocity = Vector2.Zero;
             this.Position = position;
