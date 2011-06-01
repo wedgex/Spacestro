@@ -54,16 +54,8 @@ namespace Spacestro
             viewport = graphics.GraphicsDevice.Viewport;
             cam = new GameCamera(player.Position, viewport, worldWidth, worldHeight);
             cam.Pos = this.player.Position;
-
-            //this.cloudMessenger.MessageRecieved += new EventHandler<NetIncomingMessageRecievedEventArgs>(cloudMessenger_MessageRecieved);
-
             base.Initialize();
         }
-
-        //void cloudMessenger_MessageRecieved(object sender, NetIncomingMessageRecievedEventArgs e)
-        //{
-        //    NetIncomingMessage msg = e.Message;
-        //}
 
         protected override void LoadContent()
         {
@@ -115,11 +107,11 @@ namespace Spacestro
 
             foreach (Spacestro.Entities.Player p in this.cloudMessenger.playerList)
             {
-                if (p.Name.Equals(this.cloudMessenger.client_id))
+                if (p.Name.Equals(this.cloudMessenger.client_id))  // it's us
                 {
                     player.Draw(spriteBatch);
                 }
-                else
+                else // it's someone else
                 {
                     spriteBatch.Draw(playerTexture, p.Position, null, Color.White, p.Rotation, new Vector2((float)(playerTexture.Width / 2), (float)(playerTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
                 }
@@ -173,6 +165,7 @@ namespace Spacestro
 
         protected void HandlePlayerMoving()
         {
+            // we're still updating our local player entity since we need this position to update camera
             if (this.cloudMessenger.getPlayer(this.cloudMessenger.client_id) != null)
             {
                 this.player.Move(this.cloudMessenger.getPlayer(this.cloudMessenger.client_id).Position, this.cloudMessenger.getPlayer(this.cloudMessenger.client_id).Rotation);

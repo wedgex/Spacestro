@@ -4,38 +4,38 @@ using System.Linq;
 using System.Text;
 using Spacestro.Cloud.Library;
 using Spacestro.Entities;
+using Lidgren.Network;
 
 namespace Spacestro.Cloud
 {
     class CloudGameController
     {
         public List<Player> playerList;
-        private DateTime pastTime;
-        private int ticksPerSecond = 30;
+        double now;
+        double nextUpdate = NetTime.Now;
+        private double ticksPerSecond = 30.0;
 
         public CloudGameController()
         {
             playerList = new List<Player>();
         }
 
-        public void run() // currently ticks at 30/sec.
+        public void run()
         {
-            pastTime = DateTime.Now.AddMilliseconds(60/ticksPerSecond);
             while (true)
             {
-                if (pastTime < DateTime.Now)
+                now = NetTime.Now;
+                if (now > nextUpdate)
                 {
-                    pastTime = DateTime.Now.AddMilliseconds(60 / ticksPerSecond);
                     tick();
-                }    
+                    nextUpdate += (1.0 / ticksPerSecond);
+                }
             }
         }
 
+        // this is where all server side game logic happens every tick
         public void tick()
         {
-            // handle one tick of server
-            // probably for our AI entities: update position/do action
-
             moveAll();
         }
 

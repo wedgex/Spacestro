@@ -11,16 +11,11 @@ namespace Spacestro
     class CloudMessenger
     {
         private NetClient netClient;
-        public Vector2 svrPos = Vector2.Zero;
-        public float svrRot = 0.0f;
         private String svrID = "";
 
         //private String client_id = "dereksucks420";
-        public String client_id = Path.GetRandomFileName().Replace(".", "");
+        public String client_id = Path.GetRandomFileName().Replace(".", "");  // creates random string; also is awesome
         public List<Player> playerList;
-
-
-        //public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
 
         public CloudMessenger(string configName)
         {
@@ -28,7 +23,6 @@ namespace Spacestro
             config.EnableMessageType(NetIncomingMessageType.DiscoveryResponse);
 
             this.netClient = new NetClient(config);
-
             this.netClient.Start();
 
             //TODO need to load this from config or something.
@@ -38,7 +32,7 @@ namespace Spacestro
         }
 
         /// <summary>
-        /// Checks the net client for any recieved messages and fires the MessageRecieved Event for each.
+        /// Checks the net client for any recieved messages
         /// </summary>
         public void CheckForNewMessages()
         {
@@ -51,15 +45,7 @@ namespace Spacestro
                         this.netClient.Connect(msg.SenderEndpoint);
                         break;
                     case NetIncomingMessageType.Data:
-
                         handleMessage(msg);
-                        // TODO: need to look for server telling us to send over the client id
-                        // TODO: or read message for new position
-
-                        //if (this.MessageRecieved != null)
-                        //{
-                        //    this.MessageRecieved(this, new NetIncomingMessageRecievedEventArgs(msg));
-                        //}
                         break;
                 }
             }
@@ -74,23 +60,25 @@ namespace Spacestro
                 case 99: // server wants client ID!
                     SendMessage(client_id);
                     break;
+
                 case 5: // position and rotation of some player (maybe us)
                     svrID = msg.ReadString();
 
-                    // not in list yet
+                    // not in list yet so we need to create a new player entity
                     if (!inPlayerList(svrID))
                     {
                         Player newP = new Player();
                         newP.Name = svrID;
                         playerList.Add(newP);
                     }
-                    // in list
+                    // in list already so just update
                     else if (inPlayerList(svrID))
                     {
                         getPlayer(svrID).Position = new Vector2(msg.ReadFloat(), msg.ReadFloat());
                         getPlayer(svrID).Rotation = msg.ReadFloat();
                     }
                     break;
+
                 default:
                     // unknown packet id
                     break;

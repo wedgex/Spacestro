@@ -16,7 +16,7 @@ namespace Spacestro.Entities
         public float TurnSpeed { get; set; }
         public float MaxSpeed { get; set; }
         public float Rotation { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; }  // holds client id at the moment
 
         public Player()
         {

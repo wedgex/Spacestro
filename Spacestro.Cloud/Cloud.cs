@@ -12,13 +12,10 @@ namespace Spacestro.Cloud
     class Cloud
     {
         private NetServer server;
-        private double messagesPerSecond = 30.0;
+        private double messagesPerSecond = 10.0;
         private Player p1;
         private InputState inState;
         private CloudGameController cloudGC;
-        private Thread thread;
-
-        //public event EventHandler<NetIncomingMessageRecievedEventArgs> MessageRecieved;
 
         public Cloud(string configName, int port)
         {
@@ -29,7 +26,9 @@ namespace Spacestro.Cloud
             this.server = new NetServer(config);
 
             cloudGC = new CloudGameController();
-            thread = new Thread(new ThreadStart(cloudGC.run));
+
+            Thread thread = new Thread(new ThreadStart(cloudGC.run));
+            thread.Start();
         }
 
         public void Start()
@@ -51,8 +50,6 @@ namespace Spacestro.Cloud
                             server.SendDiscoveryResponse(null, msg.SenderEndpoint);
                             break;
 
-
-
                         case NetIncomingMessageType.VerboseDebugMessage:
                         case NetIncomingMessageType.DebugMessage:
                         case NetIncomingMessageType.WarningMessage:
@@ -61,8 +58,6 @@ namespace Spacestro.Cloud
                             // TODO log errors?
                             Console.WriteLine(msg.ReadString());
                             break;
-
-
 
                         case NetIncomingMessageType.StatusChanged:
                             NetConnectionStatus status = (NetConnectionStatus)msg.ReadByte();
@@ -82,16 +77,10 @@ namespace Spacestro.Cloud
                             }
                             break;
 
+                        case NetIncomingMessageType.Data:  // handle message from client
 
-
-                        case NetIncomingMessageType.Data:
                             //Console.WriteLine(string.Format("got msg from: " + NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier)));
-
                             handleMessage(msg);
-                            //if (this.MessageRecieved != null)
-                            //{
-                            //    this.MessageRecieved(this, new NetIncomingMessageRecievedEventArgs(msg));
-                            //}
                             break;
                     }
                 }
@@ -99,8 +88,6 @@ namespace Spacestro.Cloud
                 now = NetTime.Now;
                 if (now > nextSendUpdates)
                 {
-                    cloudGC.moveAll();
-
                     foreach (NetConnection connection in server.Connections)
                     {
                         // storing client id in Tag.  If it's null, ask client to send it over.
@@ -119,8 +106,8 @@ namespace Spacestro.Cloud
                                 if (player.Tag != null)
                                 {
                                     NetOutgoingMessage sendMsg = server.CreateMessage();
-                                    sendMsg.Write((byte)5);
-                                    sendMsg.Write(player.Tag.ToString());
+                                    sendMsg.Write((byte)5); // packet id
+                                    sendMsg.Write(player.Tag.ToString()); // client id
                                     p1 = cloudGC.getPlayer(player.Tag.ToString());
                                     sendMsg.Write(p1.Position.X);
                                     sendMsg.Write(p1.Position.Y);
@@ -129,10 +116,6 @@ namespace Spacestro.Cloud
                                 }
                             }
                         }
-
-
-                        // TODO Handle broadcasting messages to connected clients.
-
                     }
                     nextSendUpdates += (1.0 / messagesPerSecond);
                 }
