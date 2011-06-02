@@ -16,6 +16,9 @@ namespace Spacestro.Cloud
         private Player p1;
         private InputState inState;
         private CloudGameController cloudGC;
+        private bool disconnectEvent = false;
+        private string disconnectPlayer = "", val = "";
+        private long disconnectRID;
 
         public Cloud(string configName, int port)
         {
@@ -63,12 +66,19 @@ namespace Spacestro.Cloud
                             NetConnectionStatus status = (NetConnectionStatus)msg.ReadByte();
                             if (status == NetConnectionStatus.Connected)
                             {
-                                Console.WriteLine(NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier) + " connected!");
+                                // Console.WriteLine(NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier) + " connected!");
                             }
                             else if (status == NetConnectionStatus.Disconnected)
                             {
                                 // closing client makes it timeout and after a few seconds sends this message?
-                                Console.WriteLine(NetUtility.ToHexString(msg.SenderConnection.RemoteUniqueIdentifier) + " disconnected!");
+                                Console.WriteLine(msg.SenderConnection.Tag.ToString() + " disconnected!");
+                                
+                                disconnectEvent = true;
+                                if (cloudGC.pList.TryGetValue(msg.SenderConnection.RemoteUniqueIdentifier, out val))
+                                {
+                                    disconnectPlayer = val;
+                                    disconnectRID = msg.SenderConnection.RemoteUniqueIdentifier;
+                                }
                             }
                             else if (status == NetConnectionStatus.Disconnecting)
                             {
@@ -103,20 +113,41 @@ namespace Spacestro.Cloud
                             // tell player of everyone's position including itself.
                             foreach (NetConnection player in server.Connections)
                             {
-                                if (player.Tag != null)
+                                if (player.Tag != null) // have client id
                                 {
-                                    NetOutgoingMessage sendMsg = server.CreateMessage();
-                                    sendMsg.Write((byte)5); // packet id
-                                    sendMsg.Write(player.Tag.ToString()); // client id
                                     p1 = cloudGC.getPlayer(player.Tag.ToString());
-                                    sendMsg.Write(p1.Position.X);
-                                    sendMsg.Write(p1.Position.Y);
-                                    sendMsg.Write(p1.Rotation);
-                                    server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
+                                    if (p1 != null) // player still connected
+                                    {
+                                        NetOutgoingMessage sendMsg = server.CreateMessage();
+                                        sendMsg.Write((byte)5); // packet id
+                                        sendMsg.Write(player.Tag.ToString()); // client id
+                                        sendMsg.Write(p1.Position.X);
+                                        sendMsg.Write(p1.Position.Y);
+                                        sendMsg.Write(p1.Rotation);
+                                        server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
+                                    }
                                 }
+
+                                
+                            }
+
+                            // inform player someone disconnected
+                            if (disconnectEvent)
+                            {
+                                NetOutgoingMessage sendMsg = server.CreateMessage();
+                                sendMsg.Write((byte)1); // packet id
+                                sendMsg.Write(disconnectPlayer); // client id
+                                server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
                             }
                         }
                     }
+
+                    if (disconnectEvent)
+                    {
+                        disconnectEvent = false;
+                        cloudGC.removePlayer(disconnectPlayer, disconnectRID);
+                    }
+
                     nextSendUpdates += (1.0 / messagesPerSecond);
                 }
 
@@ -138,7 +169,8 @@ namespace Spacestro.Cloud
                     {
                         msg.SenderConnection.Tag = msg.ReadString();
                         Console.WriteLine(msg.SenderConnection.Tag.ToString());
-                        cloudGC.addPlayer(msg.SenderConnection.Tag.ToString());
+                        cloudGC.addPlayer(msg.SenderConnection.Tag.ToString(), msg.SenderConnection.RemoteUniqueIdentifier);
+                        Console.WriteLine(msg.SenderConnection.Tag.ToString() + " connected!");
                     }
                     break;
                 case 1: // keyboards!

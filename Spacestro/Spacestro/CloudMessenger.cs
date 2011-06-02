@@ -60,6 +60,10 @@ namespace Spacestro
                 case 99: // server wants client ID!
                     SendMessage(client_id);
                     break;
+                    
+                case 1: // player disconnected
+                    playerList.Remove(getPlayer(msg.ReadString()));
+                    break;
 
                 case 5: // position and rotation of some player (maybe us)
                     svrID = msg.ReadString();
