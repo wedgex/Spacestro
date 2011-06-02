@@ -21,6 +21,8 @@ namespace Spacestro
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteFont font;
+
         Spacestro.game_obj.Player player;
         Viewport viewport;
         GameCamera cam;
@@ -67,6 +69,8 @@ namespace Spacestro
             bg2 = Content.Load<Texture2D>("bg2");
             asteroid = Content.Load<Texture2D>("asteroid");
             playerTexture = Content.Load<Texture2D>("player");
+
+            font = Content.Load<SpriteFont>("SpriteFont");
         }
 
         protected override void Update(GameTime gameTime)
@@ -110,12 +114,15 @@ namespace Spacestro
                 if (p.Name.Equals(this.cloudMessenger.client_id))  // it's us
                 {
                     player.Draw(spriteBatch);
+                    spriteBatch.DrawString(font, p.Name, player.Position + new Vector2(-40,-40), Color.PeachPuff);
                 }
                 else // it's someone else
                 {
                     spriteBatch.Draw(playerTexture, p.Position, null, Color.White, p.Rotation, new Vector2((float)(playerTexture.Width / 2), (float)(playerTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
                 }
             }
+
+            spriteBatch.DrawString(font, "<poemdexter> I'm a big ol' chat thing.", cam.Pos - new Vector2(0.5f * viewport.Width, -0.38f * viewport.Height), Color.Yellow);
 
             spriteBatch.Draw(asteroid, new Vector2(600, 600), new Rectangle(0, 0, asteroid.Width, asteroid.Height), Color.White);
             spriteBatch.End();
