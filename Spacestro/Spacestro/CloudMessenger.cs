@@ -78,8 +78,14 @@ namespace Spacestro
                     // in list already so just update
                     else if (inPlayerList(svrID))
                     {
-                        getPlayer(svrID).Position = new Vector2(msg.ReadFloat(), msg.ReadFloat());
-                        getPlayer(svrID).Rotation = msg.ReadFloat();
+                        if (this.client_id == svrID) // this is us!
+                        {
+                            
+                        }
+
+                        getPlayer(svrID).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
+                        //getPlayer(svrID).Position = new Vector2(msg.ReadFloat(), msg.ReadFloat());
+                        //getPlayer(svrID).Rotation = msg.ReadFloat();
                     }
                     break;
 

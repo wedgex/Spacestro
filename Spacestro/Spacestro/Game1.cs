@@ -112,9 +112,9 @@ namespace Spacestro
             foreach (Spacestro.Entities.Player p in this.cloudMessenger.playerList)
             {
                 if (p.Name.Equals(this.cloudMessenger.client_id))  // it's us
-                {
+                { 
                     player.Draw(spriteBatch);
-                    spriteBatch.DrawString(font, p.Name, player.Position + new Vector2(-40,-40), Color.PeachPuff);
+                    spriteBatch.DrawString(font,( "x:" + p.Position.X + " y:" + p.Position.Y), player.Position + new Vector2(-40,-40), Color.PeachPuff);
                 }
                 else // it's someone else
                 {
@@ -175,7 +175,7 @@ namespace Spacestro
             // we're still updating our local player entity since we need this position to update camera
             if (this.cloudMessenger.getPlayer(this.cloudMessenger.client_id) != null)
             {
-                this.player.Move(this.cloudMessenger.getPlayer(this.cloudMessenger.client_id).Position, this.cloudMessenger.getPlayer(this.cloudMessenger.client_id).Rotation);
+                this.player.Move(this.cloudMessenger.getPlayer(this.cloudMessenger.client_id).getNextLerpPosition(), this.cloudMessenger.getPlayer(this.cloudMessenger.client_id).getNextLerpRotation());
                 this.cam.Pos = this.player.Position;
             }
         }
