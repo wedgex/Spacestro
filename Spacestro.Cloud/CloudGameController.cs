@@ -11,6 +11,7 @@ namespace Spacestro.Cloud
     class CloudGameController
     {
         public List<Player> playerList;
+        public Dictionary<long, string> pList;
         double now;
         double nextUpdate = NetTime.Now;
         private double ticksPerSecond = 30.0;
@@ -18,6 +19,7 @@ namespace Spacestro.Cloud
         public CloudGameController()
         {
             playerList = new List<Player>();
+            pList = new Dictionary<long, string>();
         }
 
         public void run()
@@ -39,14 +41,15 @@ namespace Spacestro.Cloud
             moveAll();
         }
 
-        public void addPlayer(String name)
+        public void addPlayer(String name, long remoteID)
         {
             Player newP = new Player();
             newP.Name = name;
             playerList.Add(newP);
+            pList.Add(remoteID, name);
         }
 
-        public void removePlayer(String name)
+        public void removePlayer(String name, long remoteID)
         {
             foreach (Player player in playerList)
             {
@@ -56,6 +59,7 @@ namespace Spacestro.Cloud
                     break;
                 }
             }
+            pList.Remove(remoteID);
         }
 
         public Player getPlayer(String name)

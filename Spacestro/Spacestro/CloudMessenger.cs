@@ -60,6 +60,10 @@ namespace Spacestro
                 case 99: // server wants client ID!
                     SendMessage(client_id);
                     break;
+                    
+                case 1: // player disconnected
+                    playerList.Remove(getPlayer(msg.ReadString()));
+                    break;
 
                 case 5: // position and rotation of some player (maybe us)
                     svrID = msg.ReadString();
@@ -74,8 +78,14 @@ namespace Spacestro
                     // in list already so just update
                     else if (inPlayerList(svrID))
                     {
-                        getPlayer(svrID).Position = new Vector2(msg.ReadFloat(), msg.ReadFloat());
-                        getPlayer(svrID).Rotation = msg.ReadFloat();
+                        if (this.client_id == svrID) // this is us!
+                        {
+                            
+                        }
+
+                        getPlayer(svrID).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
+                        //getPlayer(svrID).Position = new Vector2(msg.ReadFloat(), msg.ReadFloat());
+                        //getPlayer(svrID).Rotation = msg.ReadFloat();
                     }
                     break;
 

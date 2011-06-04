@@ -68,8 +68,6 @@ namespace Spacestro
             base.Draw(gameTime);
         }
 
-       
-
         protected override void UnloadContent() { }
     }
 }

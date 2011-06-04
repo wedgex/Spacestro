@@ -9,15 +9,18 @@ namespace Spacestro.Entities
 {
     public class Player
     {
+        public float currentSmoothing = 0;
+        public float framesBetweenUpdates = 6;
 
         public Vector2 Position { get; set; }
+        public Vector2 PrevPosition { get; set; }
         public Vector2 Velocity { get; set; }
         public float Acceleration { get; set; }
         public float TurnSpeed { get; set; }
         public float MaxSpeed { get; set; }
         public float Rotation { get; set; }
+        public float PrevRotation { get; set; }
         public string Name { get; set; }  // holds client id at the moment
-
         public Player()
         {
             this.Acceleration = 0.2f;
@@ -114,6 +117,28 @@ namespace Spacestro.Entities
             this.Position = svrPos;
             this.Rotation = svrRot;
             this.Position += this.Velocity;
+        }
+
+        public void setSvrPosRot(float svr_x, float svr_y, float svr_rot)
+        {
+            this.PrevPosition = this.Position;
+            this.Position = new Vector2(svr_x, svr_y);
+            this.PrevRotation = this.Rotation;
+            this.Rotation = svr_rot;
+            this.currentSmoothing = 1;
+        }
+
+        public Vector2 getNextLerpPosition()
+        {
+            this.currentSmoothing -= 1.0f / this.framesBetweenUpdates;
+            if (this.currentSmoothing < 0)
+                this.currentSmoothing = 0;
+            return Vector2.Lerp(this.Position, this.PrevPosition, currentSmoothing);
+        }
+
+        public float getNextLerpRotation()
+        {
+            return MathHelper.Lerp(this.Rotation, this.PrevRotation, currentSmoothing);
         }
     }
 }
