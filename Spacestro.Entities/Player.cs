@@ -28,19 +28,15 @@ namespace Spacestro.Entities
             this.MaxSpeed = 8.0f;
             this.Rotation = 0.0f;
             this.Velocity = Vector2.Zero;
-            this.Position = new Vector2(40,40);
             this.Name = "";
+
+            // need to get this from network instead (doesn't matter right now since network grabs uses this default as well)
+            this.Position = new Vector2(400,400);
         }
 
         public Player(Vector2 position) : this()
         {
-            this.Acceleration = 0.2f;
-            this.TurnSpeed = 0.1f;
-            this.MaxSpeed = 8.0f;
-            this.Rotation = 0.0f;
-            this.Velocity = Vector2.Zero;
             this.Position = position;
-            this.Name = "";
         }
 
         public void handleInputState(InputState inState)
@@ -112,11 +108,11 @@ namespace Spacestro.Entities
             this.Position += this.Velocity;
         }
 
-        public void Move(Vector2 svrPos, float svrRot)
+        public void Move(Vector2 Pos, float Rot)
         {
-            this.Position = svrPos;
-            this.Rotation = svrRot;
-            this.Position += this.Velocity;
+            this.Position = Pos;
+            this.Rotation = Rot;
+            //this.Position += this.Velocity;
         }
 
         public void setSvrPosRot(float svr_x, float svr_y, float svr_rot)

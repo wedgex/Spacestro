@@ -19,11 +19,9 @@ namespace Spacestro.game_obj
         }
 
 
-        public void Initialize(Texture2D texture, Vector2 position)
+        public void Initialize(Texture2D texture)
         {
             playerTexture = texture;
-            this.Position = position;
-            this.Velocity = Vector2.Zero;
         }
 
         public void Draw(SpriteBatch spriteBatch)

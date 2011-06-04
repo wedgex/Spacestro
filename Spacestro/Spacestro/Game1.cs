@@ -25,8 +25,6 @@ namespace Spacestro
 
         ScreenManager screenManager;
 
-        int worldWidth = 2000;
-        int worldHeight = 2000;
         int windowHeight = 768;
         int windowWidth = 1024;                                       
                 

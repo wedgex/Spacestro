@@ -19,7 +19,8 @@ namespace Spacestro
             pos = Vector2.Zero;
             viewportWidth = viewport.Width;
             viewportHeight = viewport.Height;
-            _origin = new Vector2((float)(playerPos.X + (.5 * viewport.Width)), (float)(playerPos.Y + (.5 * viewport.Height)));
+            // fix me
+            _origin = new Vector2((float)(.5 * viewport.Width), (float)(.5 * viewport.Height));
             worldWidth = _worldWidth;
             worldHeight = _worldHeight;
         }
