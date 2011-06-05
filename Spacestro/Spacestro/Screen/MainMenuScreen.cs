@@ -22,11 +22,10 @@ namespace GameStateManagement
     /// </summary>
     class MainMenuScreen : MenuScreen
     {
-        Texture2D bg1, bg2, title;
+        Texture2D title;
         GraphicsDevice graphicsDevice;
         SpriteBatch spriteBatch;
-        Vector2 cam1_position = Vector2.Zero, cam2_position = Vector2.Zero;
-        Vector2 cam_velocity = new Vector2(-1, 0);
+
 
         #region Initialization
 
@@ -58,9 +57,7 @@ namespace GameStateManagement
             this.graphicsDevice = this.ScreenManager.GraphicsDevice;
             this.spriteBatch = this.ScreenManager.SpriteBatch;
             // TODO need to share the backgrounds instead of loading them twice
-            ContentManager content = this.ScreenManager.Game.Content;
-            this.bg1 = content.Load<Texture2D>("bg1");
-            this.bg2 = content.Load<Texture2D>("bg2");
+            ContentManager content = this.ScreenManager.Game.Content;            
             this.title = content.Load<Texture2D>("title");
         }
 
@@ -125,28 +122,7 @@ namespace GameStateManagement
 
         #region Draw
         public override void Draw(GameTime gameTime)
-        {
-            graphicsDevice.Clear(Color.Black);
-            cam1_position += cam_velocity;
-            cam2_position += cam_velocity;
-            if (cam1_position.X <= -142)
-                cam1_position = Vector2.Zero;
-            if (cam2_position.X <= -200)
-                cam2_position = Vector2.Zero;
-
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.LinearWrap, null, null, null, 
-                Matrix.CreateTranslation(new Vector3(cam1_position * .7f, 0)));
-
-            this.spriteBatch.Draw(this.bg1, Vector2.Zero, new Rectangle(0, 0, this.graphicsDevice.Viewport.Width*2, this.graphicsDevice.Viewport.Height), Color.White);
-            spriteBatch.End();
-
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, SamplerState.LinearWrap, null, null, null, 
-                Matrix.CreateTranslation(new Vector3(cam2_position * .5f, 0)));
-            
-            this.spriteBatch.Draw(this.bg2, Vector2.Zero, new Rectangle(0, 0, this.graphicsDevice.Viewport.Width*2, this.graphicsDevice.Viewport.Height), Color.White);
-
-            this.spriteBatch.End();
-
+        {             
             Vector2 position = new Vector2(this.graphicsDevice.Viewport.Width / 2 - this.title.Width / 2 , 50f);
             this.spriteBatch.Begin();
             this.spriteBatch.Draw(this.title, position, this.title.Bounds, Color.White);

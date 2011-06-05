@@ -133,6 +133,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="ScreenManager\GameScreen.cs" />
     <Compile Include="ScreenManager\ScreenManager.cs" />
+    <Compile Include="Screen\BackgroundScreen.cs" />
     <Compile Include="Screen\LoadingScreen.cs" />
     <Compile Include="Screen\MainMenuScreen.cs" />
     <Compile Include="Screen\MenuEntry.cs" />

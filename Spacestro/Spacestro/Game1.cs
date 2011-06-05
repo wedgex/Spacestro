@@ -15,6 +15,7 @@ using Spacestro.Cloud.Library;
 using Spacestro.game_obj;
 using Spacestro.Entities;
 using GameStateManagement;
+using Spacestro.Screen;
 
 namespace Spacestro
 {
@@ -40,6 +41,7 @@ namespace Spacestro
 
             this.Components.Add(this.screenManager);
 
+            this.screenManager.AddScreen(new BackgroundScreen());
             this.screenManager.AddScreen(new MainMenuScreen());
         }
 

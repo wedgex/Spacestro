@@ -54,6 +54,7 @@ namespace GameStateManagement
             this.screensToLoad = screensToLoad;
 
             TransitionOnTime = TimeSpan.FromSeconds(0.5);
+            TransitionOffTime = TimeSpan.FromSeconds(0.5);
         }
 
 
@@ -116,6 +117,10 @@ namespace GameStateManagement
         /// </summary>
         public override void Draw(GameTime gameTime)
         {
+            // TODO: I'd like to figure out a way to let the background screen keep drawing
+            // the paralax wihout a spit second of purple when transitioning.
+            this.ScreenManager.GraphicsDevice.Clear(Color.Black);
+
             // If we are the only active screen, that means all the previous screens
             // must have finished transitioning off. We check for this in the Draw
             // method, rather than in Update, because it isn't enough just for the
