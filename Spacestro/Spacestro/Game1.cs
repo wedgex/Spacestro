@@ -12,7 +12,6 @@ using System.Net.Sockets;
 using System.Text;
 using Lidgren.Network;
 using Spacestro.Cloud.Library;
-using Spacestro.game_obj;
 using Spacestro.Entities;
 using GameStateManagement;
 using Spacestro.Screen;

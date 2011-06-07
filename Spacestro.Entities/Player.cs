@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Spacestro.Cloud.Library;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Spacestro.Entities
 {
@@ -21,6 +22,10 @@ namespace Spacestro.Entities
         public float Rotation { get; set; }
         public float PrevRotation { get; set; }
         public string Name { get; set; }  // holds client id at the moment
+
+        public Texture2D playerTexture;
+
+
         public Player()
         {
             this.Acceleration = 0.2f;
@@ -30,13 +35,35 @@ namespace Spacestro.Entities
             this.Velocity = Vector2.Zero;
             this.Name = "";
 
-            // need to get this from network instead (doesn't matter right now since network grabs uses this default as well)
+            // need to get this from network instead 
+            //(doesn't matter right now since network grabs uses this default as well)
             this.Position = new Vector2(400,400);
         }
 
         public Player(Vector2 position) : this()
         {
             this.Position = position;
+        }
+
+        public int Width
+        {
+            get { return playerTexture.Width; }
+        }
+
+        public int Height
+        {
+            get { return playerTexture.Height; }
+        }
+
+
+        public void Initialize(Texture2D texture)
+        {
+            playerTexture = texture;
+        }
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(playerTexture, this.Position, null, Color.White, this.Rotation, new Vector2((float)(Width / 2), (float)(Height / 2)), 1f, SpriteEffects.None, 0f);
         }
 
         public void handleInputState(InputState inState)

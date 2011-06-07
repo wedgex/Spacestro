@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Spacestro.Cloud.Library;
+using Spacestro.Entities;
 
 namespace Spacestro.Screen
 {
@@ -17,7 +18,7 @@ namespace Spacestro.Screen
         GraphicsDevice graphicsDevice;
         SpriteBatch spriteBatch;
 
-        Spacestro.game_obj.Player player;
+        Player player;
         Texture2D bg1, bg2, asteroid, playerTexture;
         SpriteFont font;
         Viewport viewport;
@@ -39,7 +40,7 @@ namespace Spacestro.Screen
 
             ContentManager content = this.ScreenManager.Game.Content;
 
-            this.player = new game_obj.Player();
+            this.player = new Player();
             
             this.graphicsDevice = this.ScreenManager.GraphicsDevice;
             this.spriteBatch = this.ScreenManager.SpriteBatch;
