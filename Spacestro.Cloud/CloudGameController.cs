@@ -11,14 +11,19 @@ namespace Spacestro.Cloud
     class CloudGameController
     {
         public List<Player> playerList;
+        public List<Projectile> projectiles;
+        public List<Projectile> removeProjList;
+        private int bulletkey = 0;
         public Dictionary<long, string> pList;
         double now;
         double nextUpdate = NetTime.Now;
-        private double ticksPerSecond = 30.0;
+        private double ticksPerSecond = 20.0;
 
         public CloudGameController()
         {
             playerList = new List<Player>();
+            projectiles = new List<Projectile>();
+            removeProjList = new List<Projectile>();
             pList = new Dictionary<long, string>();
         }
 
@@ -39,6 +44,8 @@ namespace Spacestro.Cloud
         public void tick()
         {
             moveAll();
+            updateFireRates();
+            cleanLists();
         }
 
         public void addPlayer(String name, long remoteID)
@@ -82,6 +89,11 @@ namespace Spacestro.Cloud
                 if (player.Name.Equals(name))
                 {
                     player.handleInputState(inState);
+
+                    if (inState.Space)
+                    {
+                        createBullet(player);
+                    }
                     break;
                 }
             }
@@ -99,11 +111,58 @@ namespace Spacestro.Cloud
             }
         }
 
+        public void createBullet(Player player)
+        {
+            if (player.canShoot())
+            {
+                projectiles.Add(new Projectile(player.Position, player.Rotation, bulletkey, player.Name));
+                player.firecounter = player.FireRate;
+                bulletkey++;
+            }
+        }
+
         public void moveAll()
         {
             foreach (Player player in playerList)
             {
                 player.Move();
+            }
+
+            if (projectiles.Count != 0)
+            {
+                foreach (Projectile proj in projectiles)
+                {
+                    if (proj.Active)
+                    {
+                        proj.Move();
+                    }
+                    else
+                    {
+                        removeProjList.Add(proj);
+                    }
+                }
+            }
+        }
+
+        private void cleanLists()
+        {
+            if (removeProjList.Count != 0)
+            {
+                foreach (Projectile proj in removeProjList)
+                {
+                    projectiles.Remove(proj);
+                }
+            }
+        }
+
+        private void updateFireRates()
+        {
+            foreach (Player player in playerList)
+            {
+                if (player.firecounter == 0)
+                    return;
+                else
+                    player.firecounter--;
             }
         }
     }

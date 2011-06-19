@@ -126,6 +126,7 @@
   <ItemGroup>
     <Compile Include="CloudMessenger.cs" />
     <Compile Include="GameCamera.cs" />
+    <Compile Include="GameController.cs" />
     <Compile Include="GameMath.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

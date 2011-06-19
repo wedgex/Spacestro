@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
-using Spacestro.Cloud.Library;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Spacestro.Entities
 {
-    public class Player
+    public class Projectile
     {
         public float currentSmoothing = 0;
         public float framesBetweenUpdates = 3;
@@ -21,69 +17,63 @@ namespace Spacestro.Entities
         public float MaxSpeed { get; set; }
         public float Rotation { get; set; }
         public float PrevRotation { get; set; }
-        public string Name { get; set; }  // holds client id at the moment
-        public int FireRate { get; set; }
-        public int firecounter = 0;
+        public int TicksAlive { get; set; }
+        public int maxTicks { get; set; }
+        public int ID { get; set; }
+        public String Shooter { get; set; }
 
-        public Texture2D playerTexture;
+
+        public Texture2D projectileTexture;
+        public bool Active;
 
 
-        public Player()
+        public Projectile()
         {
-            this.Acceleration = 0.2f;
+            this.Acceleration = 1.0f;
             this.TurnSpeed = 0.1f;
             this.MaxSpeed = 8.0f;
             this.Rotation = 0.0f;
-            this.Velocity = Vector2.Zero;
-            this.Name = "";
-            this.FireRate = 15;
-
-            // need to get this from network instead 
-            //(doesn't matter right now since network grabs uses this default as well)
-            this.Position = new Vector2(400, 400);
+            this.TicksAlive = 0;
+            this.maxTicks = 60;
         }
 
-        public Player(Vector2 position)
+        public Projectile(Vector2 position, float rotation, int bulletkey, String shooter)
             : this()
         {
             this.Position = position;
+            this.Rotation = rotation;
+            this.Active = true;
+            this.ID = bulletkey;
+            this.Shooter = shooter;
+            Vector2 tempV = new Vector2(this.Acceleration * (float)Math.Cos(this.Rotation), this.Acceleration * (float)Math.Sin(this.Rotation));
+            tempV.Normalize();
+            tempV = new Vector2(tempV.X * this.MaxSpeed, tempV.Y * this.MaxSpeed);
+            this.Velocity = tempV;
         }
 
         public int Width
         {
-            get { return playerTexture.Width; }
+            get { return projectileTexture.Width; }
         }
 
         public int Height
         {
-            get { return playerTexture.Height; }
+            get { return projectileTexture.Height; }
         }
 
 
         public void Initialize(Texture2D texture)
         {
-            playerTexture = texture;
+            projectileTexture = texture;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(playerTexture, this.Position, null, Color.White, this.Rotation, new Vector2((float)(Width / 2), (float)(Height / 2)), 1f, SpriteEffects.None, 0f);
-        }
-
-        public void handleInputState(InputState inState)
-        {
-            if (inState.Up)
-                this.Accelerate();
-            if (inState.Down)
-                this.Decelerate();
-            if (inState.Left)
-                this.TurnLeft();
-            if (inState.Right)
-                this.TurnRight();
+            spriteBatch.Draw(projectileTexture, this.Position, null, Color.White, this.Rotation, new Vector2((float)(Width / 2), (float)(Height / 2)), 1f, SpriteEffects.None, 0f);
         }
 
         /// <summary>
-        /// Increases the ship's velocity by it's acceleration value up to it's max speed.
+        /// Increases the bullet's velocity by it's acceleration value up to it's max speed.
         /// </summary>
         public void Accelerate()
         {
@@ -99,7 +89,7 @@ namespace Spacestro.Entities
         }
 
         /// <summary>
-        /// Reduces the ship's velocity by it's acceleration value to a minimum of 0.
+        /// Reduces the bullet's velocity by it's acceleration value to a minimum of 0.
         /// </summary>
         public void Decelerate()
         {
@@ -116,33 +106,23 @@ namespace Spacestro.Entities
         }
 
         /// <summary>
-        /// Turn the ship left by it's turn speed.
-        /// </summary>
-        public void TurnLeft()
-        {
-            this.Rotation -= this.TurnSpeed;
-        }
-
-        /// <summary>
-        /// Turn the ship righ by it's turn speed.
-        /// </summary>
-        public void TurnRight()
-        {
-            this.Rotation += this.TurnSpeed;
-        }
-
-        /// <summary>
-        /// Increases the players position by it's velocity.
+        /// Increases the bullet's position by it's velocity.
         /// </summary>
         public void Move()
         {
             this.Position += this.Velocity;
+            this.TicksAlive++;
+            if (this.TicksAlive >= this.maxTicks)
+            {
+                this.Active = false;
+            }
         }
 
         public void Move(Vector2 Pos, float Rot)
         {
             this.Position = Pos;
             this.Rotation = Rot;
+            this.TicksAlive++;
         }
 
         public void setSvrPosRot(float svr_x, float svr_y, float svr_rot)
@@ -165,18 +145,6 @@ namespace Spacestro.Entities
         public float getNextLerpRotation()
         {
             return MathHelper.Lerp(this.Rotation, this.PrevRotation, currentSmoothing);
-        }
-
-        public bool canShoot()
-        {
-            if (this.firecounter == 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
     }
 }

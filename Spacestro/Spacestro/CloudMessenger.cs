@@ -12,10 +12,10 @@ namespace Spacestro
     {
         private NetClient netClient;
         private String svrID = "";
+        public GameController gameController;
 
         //private String client_id = "dereksucks420";
         public String client_id = Path.GetRandomFileName().Replace(".", "");  // creates random string; also is awesome
-        public List<Player> playerList;
 
         public CloudMessenger(string configName)
         {
@@ -28,7 +28,7 @@ namespace Spacestro
             //TODO need to load this from config or something.
             this.netClient.DiscoverKnownPeer("localhost", 8383);
 
-            this.playerList = new List<Player>();
+            gameController = new GameController();
         }
 
         /// <summary>
@@ -62,31 +62,46 @@ namespace Spacestro
                     break;
                     
                 case 1: // player disconnected
-                    playerList.Remove(getPlayer(msg.ReadString()));
+                    gameController.removePlayer(msg.ReadString());
                     break;
 
                 case 5: // position and rotation of some player (maybe us)
                     svrID = msg.ReadString();
 
                     // not in list yet so we need to create a new player entity
-                    if (!inPlayerList(svrID))
+                    if (!gameController.inPlayerList(svrID))
                     {
                         Player newP = new Player();
                         newP.Name = svrID;
-                        playerList.Add(newP);
+                        gameController.addPlayer(newP);
                     }
                     // in list already so just update
-                    else if (inPlayerList(svrID))
+                    else if (gameController.inPlayerList(svrID))
                     {
                         if (this.client_id == svrID) // this is us!
                         {
                             
                         }
 
-                        getPlayer(svrID).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
-                        //getPlayer(svrID).Position = new Vector2(msg.ReadFloat(), msg.ReadFloat());
-                        //getPlayer(svrID).Rotation = msg.ReadFloat();
+                        gameController.getPlayer(svrID).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
                     }
+                    break;
+
+                case 10: // projectile
+                    int key = msg.ReadByte();
+                    if (gameController.inProjectileList(key))
+                    {
+                        gameController.getProjectile(key).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
+                    }
+                    else 
+                    {
+                        float f1, f2, f3;
+                        f1 = msg.ReadFloat();
+                        f2 = msg.ReadFloat();
+                        f3 = msg.ReadFloat();
+                        gameController.projectiles.Add(new Projectile(new Vector2(f1, f2), f3, key, client_id));
+                    }
+
                     break;
 
                 default:
@@ -123,29 +138,6 @@ namespace Spacestro
                 }
             }
             this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);
-        }
-
-        private bool inPlayerList(String cid)
-        {
-            foreach (Player p in playerList)
-            {
-                if (p.Name.Equals(cid))
-                    return true;
-            }
-            return false;
-        }
-
-        public Player getPlayer(String name)
-        {
-            foreach (Player player in playerList)
-            {
-                if (player.Name.Equals(name))
-                {
-                    return player;
-                }
-            }
-
-            return null;
-        }
+        }        
     }
 }

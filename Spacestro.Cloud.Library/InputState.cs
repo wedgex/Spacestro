@@ -12,8 +12,9 @@ namespace Spacestro.Cloud.Library
         public bool Down { get; set; }
         public bool Left { get; set; }
         public bool Right { get; set; }
+        public bool Space { get; set; }
 
-        public InputState(int up, int down, int left, int right) : this()
+        public InputState(int up, int down, int left, int right, int space) : this()
         {
             if (up.Equals(1))
             {
@@ -49,12 +50,21 @@ namespace Spacestro.Cloud.Library
             else
             {
                 this.Right = false;
-            } 
+            }
+
+            if (space.Equals(1))
+            {
+                this.Space = true;
+            }
+            else
+            {
+                this.Space = false;
+            }
         }
 
         public bool HasKeyDown()
         {
-            return this.Up || this.Down ||this.Left || this.Right;
+            return this.Up || this.Down ||this.Left || this.Right || this.Space;
         }
 
         public void resetStates()
@@ -63,10 +73,11 @@ namespace Spacestro.Cloud.Library
             this.Down = false;
             this.Left = false;
             this.Right = false;
+            this.Space = false;
             
         }
 
-        public void setStates(int up, int down, int left, int right)
+        public void setStates(int up, int down, int left, int right, int space)
         {
             if (up.Equals(1))
             {
@@ -103,11 +114,20 @@ namespace Spacestro.Cloud.Library
             {
                 this.Right = false;
             }
+
+            if (space.Equals(1))
+            {
+                this.Space = true;
+            }
+            else
+            {
+                this.Space = false;
+            }
         }
 
         public bool[] getStateList()
         {
-            return new bool[] { this.Up, this.Down, this.Left, this.Right };
+            return new bool[] { this.Up, this.Down, this.Left, this.Right, this.Space };
         }
     }
 }

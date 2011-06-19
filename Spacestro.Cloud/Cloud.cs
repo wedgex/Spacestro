@@ -12,7 +12,7 @@ namespace Spacestro.Cloud
     class Cloud
     {
         private NetServer server;
-        private double messagesPerSecond = 10.0;
+        private double messagesPerSecond = 20.0;
         private Player p1;
         private InputState inState;
         private CloudGameController cloudGC;
@@ -127,8 +127,21 @@ namespace Spacestro.Cloud
                                         server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
                                     }
                                 }
+                            }
 
-                                
+                            // tell player of the bullets
+                            foreach (Projectile proj in cloudGC.projectiles)
+                            {
+                                if (proj.Active)
+                                {
+                                    NetOutgoingMessage sendMsg = server.CreateMessage();
+                                    sendMsg.Write((byte)10); // packet id
+                                    sendMsg.Write((byte)proj.ID);
+                                    sendMsg.Write(proj.Position.X);
+                                    sendMsg.Write(proj.Position.Y);
+                                    sendMsg.Write(proj.Rotation);
+                                    server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
+                                }
                             }
 
                             // inform player someone disconnected
@@ -175,7 +188,7 @@ namespace Spacestro.Cloud
                     break;
                 case 1: // keyboards!
                     inState.resetStates();
-                    inState.setStates(msg.ReadByte(), msg.ReadByte(), msg.ReadByte(), msg.ReadByte());
+                    inState.setStates(msg.ReadByte(), msg.ReadByte(), msg.ReadByte(), msg.ReadByte(), msg.ReadByte());
                     cloudGC.handleInputState(inState, msg.SenderConnection.Tag.ToString());
                     // tell player new position
                     break;

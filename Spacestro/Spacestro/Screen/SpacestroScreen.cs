@@ -19,11 +19,10 @@ namespace Spacestro.Screen
         SpriteBatch spriteBatch;
 
         Player player;
-        Texture2D bg1, bg2, asteroid, playerTexture;
+        Texture2D bg1, bg2, asteroid, playerTexture, bulletTexture;
         SpriteFont font;
         Viewport viewport;
         GameCamera cam;
-
 
         int worldWidth = 2000;
         int worldHeight = 2000;
@@ -50,7 +49,9 @@ namespace Spacestro.Screen
             bg1 = content.Load<Texture2D>("bg1");
             bg2 = content.Load<Texture2D>("bg2");
             asteroid = content.Load<Texture2D>("asteroid");
-            playerTexture = content.Load<Texture2D>("player");            
+            playerTexture = content.Load<Texture2D>("player");
+            bulletTexture = content.Load<Texture2D>("bullet");
+            
             font = content.Load<SpriteFont>("SpriteFont");
 
             player.Initialize(playerTexture);
@@ -90,6 +91,11 @@ namespace Spacestro.Screen
                 //this.player.Decelerate();
                 inputState.Down = true;
             }
+            if (keyboard.IsKeyDown(Keys.Space))
+            {
+                //this.player.Decelerate();
+                inputState.Space = true;
+            }
         }
 
         public override void Draw(GameTime gameTime)
@@ -114,7 +120,7 @@ namespace Spacestro.Screen
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
                         null, null, null, null, this.cam.getTransformation());
 
-            foreach (Spacestro.Entities.Player p in this.cloudMessenger.playerList)
+            foreach (Player p in this.cloudMessenger.gameController.playerList)
             {
                 if (p.Name.Equals(this.cloudMessenger.client_id))  // it's us
                 {
@@ -127,9 +133,23 @@ namespace Spacestro.Screen
                 }
             }
 
+            foreach (Projectile proj in this.cloudMessenger.gameController.projectiles)
+            {
+                if (proj.Active)
+                {
+                    spriteBatch.Draw(bulletTexture, proj.getNextLerpPosition(), null, Color.White, proj.getNextLerpRotation(), new Vector2((float)(bulletTexture.Width / 2), (float)(bulletTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
+                    proj.TicksAlive++;
+                    if (proj.TicksAlive >= 120)
+                    {
+                        proj.Active = false;
+                    }
+                }
+            }
+
             spriteBatch.DrawString(font, "<poemdexter> I'm a big ol' chat thing.", this.cam.Pos - new Vector2(0.5f * viewport.Width, -0.38f * viewport.Height), Color.Yellow);
 
             spriteBatch.Draw(asteroid, new Vector2(600, 600), new Rectangle(0, 0, asteroid.Width, asteroid.Height), Color.White);
+
             spriteBatch.End();
         }
 
@@ -159,9 +179,9 @@ namespace Spacestro.Screen
         protected void HandlePlayerMoving()
         {
             // we're still updating our local player entity since we need this position to update camera
-            if (this.cloudMessenger.getPlayer(this.cloudMessenger.client_id) != null)
+            if (this.cloudMessenger.gameController.getPlayer(this.cloudMessenger.client_id) != null)
             {
-                this.player.Move(this.cloudMessenger.getPlayer(this.cloudMessenger.client_id).getNextLerpPosition(), this.cloudMessenger.getPlayer(this.cloudMessenger.client_id).getNextLerpRotation());
+                this.player.Move(this.cloudMessenger.gameController.getPlayer(this.cloudMessenger.client_id).getNextLerpPosition(), this.cloudMessenger.gameController.getPlayer(this.cloudMessenger.client_id).getNextLerpRotation());
                 this.cam.Pos = this.player.Position;
             }
         }
