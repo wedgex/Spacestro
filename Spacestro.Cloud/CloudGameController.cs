@@ -8,11 +8,26 @@ using Lidgren.Network;
 
 namespace Spacestro.Cloud
 {
+    public struct Collision
+    {
+        public Player player { get; set; }
+        public Projectile projectile { get; set; }
+
+        public Collision(Player p, Projectile proj)
+            : this()
+        {
+            this.player = p;
+            this.projectile = proj;
+        }
+    }
+
     class CloudGameController
     {
         public List<Player> playerList;
         public List<Projectile> projectiles;
         public List<Projectile> removeProjList;
+        public List<Collision> collisionList;
+
         private int bulletkey = 0;
         public Dictionary<long, string> pList;
         double now;
@@ -24,6 +39,7 @@ namespace Spacestro.Cloud
             playerList = new List<Player>();
             projectiles = new List<Projectile>();
             removeProjList = new List<Projectile>();
+            collisionList = new List<Collision>();
             pList = new Dictionary<long, string>();
         }
 
@@ -45,8 +61,34 @@ namespace Spacestro.Cloud
         {
             moveAll();
             updateFireRates();
+            checkCollisions();
             cleanLists();
+
         }
+
+        private void checkCollisions()
+        {
+            foreach (Player p in playerList)
+            {
+                foreach (Projectile proj in projectiles)
+                {
+                    if (proj.Active && !p.Name.Equals(proj.Shooter))
+                    {
+                        if (proj.getRectangle().Intersects(p.getRectangle()))
+                        {
+                            collisionList.Add(new Collision(p, proj));
+                            proj.Active = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        public void clearCollisionsList()
+        {
+            collisionList = new List<Collision>();
+        }
+
 
         public void addPlayer(String name, long remoteID)
         {
@@ -159,9 +201,7 @@ namespace Spacestro.Cloud
         {
             foreach (Player player in playerList)
             {
-                if (player.firecounter == 0)
-                    return;
-                else
+                if (player.firecounter != 0)
                     player.firecounter--;
             }
         }

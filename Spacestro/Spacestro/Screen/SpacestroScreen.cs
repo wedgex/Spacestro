@@ -124,12 +124,16 @@ namespace Spacestro.Screen
             {
                 if (p.Name.Equals(this.cloudMessenger.client_id))  // it's us
                 {
+                    // draw player
                     this.player.Draw(spriteBatch);
-                    spriteBatch.DrawString(font, this.cam.Pos.ToString(), this.player.Position + new Vector2(-40, -40), Color.PeachPuff);
+
+                    // draw something above player
+                    spriteBatch.DrawString(font, "Hit: " + p.hitCount.ToString(), this.player.Position + new Vector2(-40, -40), Color.PeachPuff);
                 }
                 else // it's someone else
                 {
-                    spriteBatch.Draw(playerTexture, p.Position, null, Color.White, p.Rotation, new Vector2((float)(playerTexture.Width / 2), (float)(playerTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(playerTexture, p.getNextLerpPosition(), null, Color.White, p.Rotation, new Vector2((float)(playerTexture.Width / 2), (float)(playerTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
+                    spriteBatch.DrawString(font, "Hit: " + p.hitCount.ToString(), p.Position + new Vector2(-40, -40), Color.PeachPuff);
                 }
             }
 

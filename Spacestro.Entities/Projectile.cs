@@ -22,16 +22,14 @@ namespace Spacestro.Entities
         public int ID { get; set; }
         public String Shooter { get; set; }
 
-
         public Texture2D projectileTexture;
         public bool Active;
-
 
         public Projectile()
         {
             this.Acceleration = 1.0f;
             this.TurnSpeed = 0.1f;
-            this.MaxSpeed = 8.0f;
+            this.MaxSpeed = 15.0f;
             this.Rotation = 0.0f;
             this.TicksAlive = 0;
             this.maxTicks = 60;
@@ -145,6 +143,11 @@ namespace Spacestro.Entities
         public float getNextLerpRotation()
         {
             return MathHelper.Lerp(this.Rotation, this.PrevRotation, currentSmoothing);
+        }
+
+        public Rectangle getRectangle()
+        {
+            return new Rectangle((int)this.Position.X, (int)this.Position.Y, 9, 9);
         }
     }
 }

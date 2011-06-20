@@ -26,7 +26,7 @@ namespace Spacestro
             this.netClient.Start();
 
             //TODO need to load this from config or something.
-            this.netClient.DiscoverKnownPeer("localhost", 8383);
+            this.netClient.DiscoverKnownPeer("5.190.51.196", 8383);
 
             gameController = new GameController();
         }
@@ -60,7 +60,7 @@ namespace Spacestro
                 case 99: // server wants client ID!
                     SendMessage(client_id);
                     break;
-                    
+
                 case 1: // player disconnected
                     gameController.removePlayer(msg.ReadString());
                     break;
@@ -80,7 +80,7 @@ namespace Spacestro
                     {
                         if (this.client_id == svrID) // this is us!
                         {
-                            
+
                         }
 
                         gameController.getPlayer(svrID).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
@@ -93,7 +93,7 @@ namespace Spacestro
                     {
                         gameController.getProjectile(key).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
                     }
-                    else 
+                    else
                     {
                         float f1, f2, f3;
                         f1 = msg.ReadFloat();
@@ -101,7 +101,13 @@ namespace Spacestro
                         f3 = msg.ReadFloat();
                         gameController.projectiles.Add(new Projectile(new Vector2(f1, f2), f3, key, client_id));
                     }
+                    break;
 
+                case 15: // bullet collision
+                    gameController.getPlayer(msg.ReadString()).getHit();
+                    int tempID = msg.ReadByte();
+                    if (gameController.inProjectileList(tempID))
+                        gameController.getProjectile(tempID).Active = false;
                     break;
 
                 default:
@@ -138,6 +144,6 @@ namespace Spacestro
                 }
             }
             this.netClient.SendMessage(msg, NetDeliveryMethod.Unreliable);
-        }        
+        }
     }
 }

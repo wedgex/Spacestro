@@ -144,6 +144,19 @@ namespace Spacestro.Cloud
                                 }
                             }
 
+                            // tell player of collisions
+                            if (cloudGC.collisionList.Count != 0)
+                            {
+                                foreach (Collision c in cloudGC.collisionList)
+                                {
+                                    NetOutgoingMessage sendMsg = server.CreateMessage();
+                                    sendMsg.Write((byte)15); // packet id
+                                    sendMsg.Write(c.player.Name);
+                                    sendMsg.Write(c.projectile.ID);
+                                    server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
+                                }
+                            }
+
                             // inform player someone disconnected
                             if (disconnectEvent)
                             {
@@ -154,6 +167,8 @@ namespace Spacestro.Cloud
                             }
                         }
                     }
+
+                    cloudGC.clearCollisionsList();
 
                     if (disconnectEvent)
                     {

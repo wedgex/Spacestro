@@ -24,9 +24,9 @@ namespace Spacestro.Entities
         public string Name { get; set; }  // holds client id at the moment
         public int FireRate { get; set; }
         public int firecounter = 0;
+        public int hitCount = 0;
 
         public Texture2D playerTexture;
-
 
         public Player()
         {
@@ -59,6 +59,10 @@ namespace Spacestro.Entities
             get { return playerTexture.Height; }
         }
 
+        public void getHit()
+        {
+            hitCount++;
+        }
 
         public void Initialize(Texture2D texture)
         {
@@ -177,6 +181,11 @@ namespace Spacestro.Entities
             {
                 return false;
             }
+        }
+
+        public Rectangle getRectangle()
+        {
+            return new Rectangle((int)(this.Position.X - (25/2)), (int)(this.Position.Y - (20/2)), 25, 20);
         }
     }
 }
