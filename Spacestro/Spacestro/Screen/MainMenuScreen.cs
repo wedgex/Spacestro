@@ -75,7 +75,7 @@ namespace GameStateManagement
         /// </summary>
         void PlayGameMenuEntrySelected(object sender, EventArgs e)
         {
-            LoadingScreen.Load(ScreenManager, true, new SpacestroScreen());
+            this.ScreenManager.AddScreen(new ConnectionScreen());            
         }
 
 

@@ -29,13 +29,19 @@ namespace Spacestro.Screen
         
         InputState inputState;
 
+        private string ipAddress;
         private CloudMessenger cloudMessenger;
+
+        public SpacestroScreen(string ip)
+        {
+            this.ipAddress = ip;
+        }
 
         #region Load and Unload Content
         public override void LoadContent()
         {
 
-            this.cloudMessenger = new CloudMessenger("spacestro");
+            this.cloudMessenger = new CloudMessenger("spacestro", this.ipAddress);
 
             ContentManager content = this.ScreenManager.Game.Content;
 

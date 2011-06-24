@@ -17,7 +17,7 @@ namespace Spacestro
         //private String client_id = "dereksucks420";
         public String client_id = Path.GetRandomFileName().Replace(".", "");  // creates random string; also is awesome
 
-        public CloudMessenger(string configName)
+        public CloudMessenger(string configName, string ipAddress)
         {
             NetPeerConfiguration config = new NetPeerConfiguration(configName);
             config.EnableMessageType(NetIncomingMessageType.DiscoveryResponse);
@@ -26,7 +26,7 @@ namespace Spacestro
             this.netClient.Start();
 
             //TODO need to load this from config or something.
-            this.netClient.DiscoverKnownPeer("5.190.51.196", 8383);
+            this.netClient.DiscoverKnownPeer(ipAddress, 8383);
 
             gameController = new GameController();
         }

@@ -134,6 +134,7 @@
     <Compile Include="ScreenManager\GameScreen.cs" />
     <Compile Include="ScreenManager\ScreenManager.cs" />
     <Compile Include="Screen\BackgroundScreen.cs" />
+    <Compile Include="Screen\ConnectionScreen.cs" />
     <Compile Include="Screen\LoadingScreen.cs" />
     <Compile Include="Screen\MainMenuScreen.cs" />
     <Compile Include="Screen\MenuEntry.cs" />
@@ -154,6 +155,10 @@
     <ProjectReference Include="..\..\Spacestro.Entities\Spacestro.Entities.csproj">
       <Project>{57935BE8-9F72-4228-A268-F672F6E7540F}</Project>
       <Name>Spacestro.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Spacestro.Util\Spacestro.Util.csproj">
+      <Project>{D9073027-6E73-4138-B019-6653EC046B16}</Project>
+      <Name>Spacestro.Util</Name>
     </ProjectReference>
     <ProjectReference Include="..\SpacestroContent\SpacestroContent.contentproj">
       <Name>SpacestroContent</Name>
