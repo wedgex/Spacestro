@@ -58,7 +58,7 @@ namespace Spacestro.Screen
             playerTexture = content.Load<Texture2D>("player");
             bulletTexture = content.Load<Texture2D>("bullet");
             
-            font = content.Load<SpriteFont>("SpriteFont");
+            font = content.Load<SpriteFont>("Orbitron");
 
             player.Initialize(playerTexture);
             
