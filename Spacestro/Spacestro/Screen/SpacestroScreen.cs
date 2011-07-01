@@ -19,8 +19,8 @@ namespace Spacestro.Screen
         SpriteBatch spriteBatch;
 
         Player player;
-        Texture2D bg1, bg2, asteroid, playerTexture, bulletTexture;
-        SpriteFont font;
+        Texture2D bg1, bg2, asteroid, playerTexture, bulletTexture, ufoTexture;
+        SpriteFont font, font_S;
         Viewport viewport;
         GameCamera cam;
 
@@ -57,8 +57,10 @@ namespace Spacestro.Screen
             asteroid = content.Load<Texture2D>("asteroid");
             playerTexture = content.Load<Texture2D>("player");
             bulletTexture = content.Load<Texture2D>("bullet");
+            ufoTexture = content.Load<Texture2D>("UFO");
             
             font = content.Load<SpriteFont>("Orbitron");
+            font_S = content.Load<SpriteFont>("Orbitron_S");
 
             player.Initialize(playerTexture);
             
@@ -134,12 +136,12 @@ namespace Spacestro.Screen
                     this.player.Draw(spriteBatch);
 
                     // draw something above player
-                    spriteBatch.DrawString(font, "Hit: " + p.hitCount.ToString(), this.player.Position + new Vector2(-40, -40), Color.PeachPuff);
+                    spriteBatch.DrawString(font_S, "Hit: " + p.hitCount.ToString(), this.player.Position + new Vector2(-40, -40), Color.PeachPuff);
                 }
                 else // it's someone else
                 {
                     spriteBatch.Draw(playerTexture, p.getNextLerpPosition(), null, Color.White, p.Rotation, new Vector2((float)(playerTexture.Width / 2), (float)(playerTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
-                    spriteBatch.DrawString(font, "Hit: " + p.hitCount.ToString(), p.Position + new Vector2(-40, -40), Color.PeachPuff);
+                    spriteBatch.DrawString(font_S, "Hit: " + p.hitCount.ToString(), p.Position + new Vector2(-40, -40), Color.PeachPuff);
                 }
             }
 
@@ -156,7 +158,7 @@ namespace Spacestro.Screen
                 }
             }
 
-            spriteBatch.DrawString(font, "<poemdexter> I'm a big ol' chat thing.", this.cam.Pos - new Vector2(0.5f * viewport.Width, -0.38f * viewport.Height), Color.Yellow);
+            spriteBatch.DrawString(font_S, "<poemdexter> I'm a big ol' chat thing.", this.cam.Pos - new Vector2(0.5f * viewport.Width, -0.38f * viewport.Height), Color.Yellow);
 
             spriteBatch.Draw(asteroid, new Vector2(600, 600), new Rectangle(0, 0, asteroid.Width, asteroid.Height), Color.White);
 

@@ -144,6 +144,21 @@ namespace Spacestro.Cloud
                                 }
                             }
 
+                            // tell player of the enemies
+                            if (cloudGC.enemyList.Count != 0)
+                            {
+                                foreach (Enemy enemy in cloudGC.enemyList)
+                                {
+                                    NetOutgoingMessage sendMsg = server.CreateMessage();
+                                    sendMsg.Write((byte)11);
+                                    sendMsg.Write((byte)enemy.ID);
+                                    sendMsg.Write(enemy.Position.X);
+                                    sendMsg.Write(enemy.Position.Y);
+                                    sendMsg.Write(enemy.Rotation);
+                                    server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
+                                }
+                            }
+
                             // tell player of collisions
                             if (cloudGC.collisionList.Count != 0)
                             {

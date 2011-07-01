@@ -10,11 +10,13 @@ namespace Spacestro
     {
         public List<Player> playerList;
         public List<Projectile> projectiles;
+        public List<Enemy> enemies;
 
         public GameController()
         {
             playerList = new List<Player>();
             projectiles = new List<Projectile>();
+            enemies = new List<Enemy>();
         }
 
         public bool inPlayerList(String cid)
@@ -32,6 +34,16 @@ namespace Spacestro
             foreach (Projectile p in projectiles)
             {
                 if (p.ID == id)
+                    return true;
+            }
+            return false;
+        }
+
+        public bool inEnemyList(int id)
+        {
+            foreach (Enemy e in enemies)
+            {
+                if (e.ID == id)
                     return true;
             }
             return false;
@@ -72,6 +84,16 @@ namespace Spacestro
             {
                 if (p.ID == id)
                     return p;
+            }
+            return null;
+        }
+
+        public Enemy getEnemy(int id)
+        {
+            foreach (Enemy e in enemies)
+            {
+                if (e.ID == id)
+                    return e;
             }
             return null;
         }

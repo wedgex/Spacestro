@@ -5,6 +5,7 @@ using System.Text;
 using Spacestro.Cloud.Library;
 using Spacestro.Entities;
 using Lidgren.Network;
+using Microsoft.Xna.Framework;
 
 namespace Spacestro.Cloud
 {
@@ -23,12 +24,22 @@ namespace Spacestro.Cloud
 
     class CloudGameController
     {
+        public int worldWidth = 2000;
+        public int worldHeight = 2000;
+
+        Random random = new Random((int)NetTime.Now);
+
         public List<Player> playerList;
         public List<Projectile> projectiles;
         public List<Projectile> removeProjList;
         public List<Collision> collisionList;
 
+        public List<Enemy> enemyList;
+        private int maxEnemies = 10;
+
         private int bulletkey = 0;
+        private int entitykey = 0;
+
         public Dictionary<long, string> pList;
         double now;
         double nextUpdate = NetTime.Now;
@@ -40,6 +51,7 @@ namespace Spacestro.Cloud
             projectiles = new List<Projectile>();
             removeProjList = new List<Projectile>();
             collisionList = new List<Collision>();
+            enemyList = new List<Enemy>();
             pList = new Dictionary<long, string>();
         }
 
@@ -59,11 +71,23 @@ namespace Spacestro.Cloud
         // this is where all server side game logic happens every tick
         public void tick()
         {
-            moveAll();
-            updateFireRates();
-            checkCollisions();
+            createNewEnemy(); // hooray enemies
+            moveAll();        // to be implemented for enemies
+            updateFireRates();// hooray enemies
+            checkCollisions();// to be implemented for enemies
             cleanLists();
 
+        }
+
+        private void createNewEnemy()
+        {
+            // check for max enemies
+            if (enemyList.Count != maxEnemies)
+            {
+                // create new enemies
+                enemyList.Add(new Enemy(new Vector2(random.Next(worldWidth), random.Next(worldHeight)), entitykey));
+                entitykey++;
+            }
         }
 
         private void checkCollisions()
@@ -151,6 +175,7 @@ namespace Spacestro.Cloud
                     break;
                 }
             }
+            
         }
 
         public void createBullet(Player player)
@@ -184,6 +209,14 @@ namespace Spacestro.Cloud
                     }
                 }
             }
+
+            if (enemyList.Count != 0)
+            {
+                foreach (Enemy enemy in enemyList)
+                {
+                    //enemy.Move();
+                }
+            }
         }
 
         private void cleanLists()
@@ -203,6 +236,15 @@ namespace Spacestro.Cloud
             {
                 if (player.firecounter != 0)
                     player.firecounter--;
+            }
+
+            if (enemyList.Count != 0)
+            {
+                foreach (Enemy enemy in enemyList)
+                {
+                    if (enemy.firecounter != 0)
+                        enemy.firecounter--;
+                }
             }
         }
     }
