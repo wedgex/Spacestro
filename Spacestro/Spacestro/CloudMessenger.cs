@@ -103,6 +103,22 @@ namespace Spacestro
                     }
                     break;
 
+                case 11: // enemy
+                    int ekey = msg.ReadByte();
+                    if (gameController.inEnemyList(ekey))
+                    {
+                        gameController.getEnemy(ekey).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
+                    }
+                    else
+                    {
+                        float f1, f2, f3;
+                        f1 = msg.ReadFloat();
+                        f2 = msg.ReadFloat();
+                        f3 = msg.ReadFloat();
+                        gameController.enemies.Add(new Enemy(new Vector2(f1, f2), ekey));
+                    }
+                    break;
+
                 case 15: // bullet collision
                     gameController.getPlayer(msg.ReadString()).getHit();
                     int tempID = msg.ReadByte();
