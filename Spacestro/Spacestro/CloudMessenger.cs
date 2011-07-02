@@ -9,16 +9,34 @@ using System.Collections.Generic;
 namespace Spacestro
 {
     class CloudMessenger
-    {
+    {        
+        private string svrID = "";
         private NetClient netClient;
-        private String svrID = "";
-        public GameController gameController;
-
-        //private String client_id = "dereksucks420";
-        public String client_id = Path.GetRandomFileName().Replace(".", "");  // creates random string; also is awesome
+        
+        public GameController GameController { get; private set; }
+        public string ClientID { get; private set; }
+        
+        public bool Connected 
+        {
+            get
+            {
+                NetIncomingMessage msg;
+                while ((msg = this.netClient.ReadMessage()) != null)
+                {
+                    if (msg.MessageType == NetIncomingMessageType.DiscoveryResponse)
+                    {
+                        this.netClient.Connect(msg.SenderEndpoint);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
 
         public CloudMessenger(string configName, string ipAddress)
         {
+            this.ClientID = Path.GetRandomFileName().Replace(".", "");  // creates random string; also is awesome
+
             NetPeerConfiguration config = new NetPeerConfiguration(configName);
             config.EnableMessageType(NetIncomingMessageType.DiscoveryResponse);
 
@@ -28,7 +46,7 @@ namespace Spacestro
             //TODO need to load this from config or something.
             this.netClient.DiscoverKnownPeer(ipAddress, 8383);
 
-            gameController = new GameController();
+            this.GameController = new GameController();
         }
 
         /// <summary>
@@ -45,53 +63,53 @@ namespace Spacestro
                         this.netClient.Connect(msg.SenderEndpoint);
                         break;
                     case NetIncomingMessageType.Data:
-                        handleMessage(msg);
+                        HandleMessage(msg);
                         break;
                 }
             }
         }
 
-        protected void handleMessage(NetIncomingMessage msg)
+        protected void HandleMessage(NetIncomingMessage msg)
         {
             int packetId = msg.ReadByte();
 
             switch (packetId)
             {
                 case 99: // server wants client ID!
-                    SendMessage(client_id);
+                    SendMessage(this.ClientID);
                     break;
 
                 case 1: // player disconnected
-                    gameController.removePlayer(msg.ReadString());
+                    this.GameController.removePlayer(msg.ReadString());
                     break;
 
                 case 5: // position and rotation of some player (maybe us)
                     svrID = msg.ReadString();
 
                     // not in list yet so we need to create a new player entity
-                    if (!gameController.inPlayerList(svrID))
+                    if (!this.GameController.inPlayerList(svrID))
                     {
                         Player newP = new Player();
                         newP.Name = svrID;
-                        gameController.addPlayer(newP);
+                        this.GameController.addPlayer(newP);
                     }
                     // in list already so just update
-                    else if (gameController.inPlayerList(svrID))
+                    else if (this.GameController.inPlayerList(svrID))
                     {
-                        if (this.client_id == svrID) // this is us!
+                        if (this.ClientID == svrID) // this is us!
                         {
-
+                            // cool story bro!
                         }
 
-                        gameController.getPlayer(svrID).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
+                        this.GameController.getPlayer(svrID).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
                     }
                     break;
 
                 case 10: // projectile
                     int key = msg.ReadByte();
-                    if (gameController.inProjectileList(key))
+                    if (this.GameController.inProjectileList(key))
                     {
-                        gameController.getProjectile(key).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
+                        this.GameController.getProjectile(key).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
                     }
                     else
                     {
@@ -99,15 +117,15 @@ namespace Spacestro
                         f1 = msg.ReadFloat();
                         f2 = msg.ReadFloat();
                         f3 = msg.ReadFloat();
-                        gameController.projectiles.Add(new Projectile(new Vector2(f1, f2), f3, key, client_id));
+                        this.GameController.projectiles.Add(new Projectile(new Vector2(f1, f2), f3, key, this.ClientID));
                     }
                     break;
 
                 case 15: // bullet collision
-                    gameController.getPlayer(msg.ReadString()).getHit();
+                    this.GameController.getPlayer(msg.ReadString()).getHit();
                     int tempID = msg.ReadByte();
-                    if (gameController.inProjectileList(tempID))
-                        gameController.getProjectile(tempID).Active = false;
+                    if (this.GameController.inProjectileList(tempID))
+                        this.GameController.getProjectile(tempID).Active = false;
                     break;
 
                 default:

@@ -28,21 +28,17 @@ namespace Spacestro.Screen
         int worldHeight = 2000;
         
         InputState inputState;
-
-        private string ipAddress;
+        
         private CloudMessenger cloudMessenger;
 
-        public SpacestroScreen(string ip)
+        public SpacestroScreen(CloudMessenger messenger)
         {
-            this.ipAddress = ip;
+            this.cloudMessenger = messenger;
         }
 
         #region Load and Unload Content
         public override void LoadContent()
-        {
-
-            this.cloudMessenger = new CloudMessenger("spacestro", this.ipAddress);
-
+        {            
             ContentManager content = this.ScreenManager.Game.Content;
 
             this.player = new Player();
@@ -128,9 +124,9 @@ namespace Spacestro.Screen
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
                         null, null, null, null, this.cam.getTransformation());
 
-            foreach (Player p in this.cloudMessenger.gameController.playerList)
+            foreach (Player p in this.cloudMessenger.GameController.playerList)
             {
-                if (p.Name.Equals(this.cloudMessenger.client_id))  // it's us
+                if (p.Name.Equals(this.cloudMessenger.ClientID))  // it's us
                 {
                     // draw player
                     this.player.Draw(spriteBatch);
@@ -145,7 +141,7 @@ namespace Spacestro.Screen
                 }
             }
 
-            foreach (Projectile proj in this.cloudMessenger.gameController.projectiles)
+            foreach (Projectile proj in this.cloudMessenger.GameController.projectiles)
             {
                 if (proj.Active)
                 {
@@ -191,9 +187,9 @@ namespace Spacestro.Screen
         protected void HandlePlayerMoving()
         {
             // we're still updating our local player entity since we need this position to update camera
-            if (this.cloudMessenger.gameController.getPlayer(this.cloudMessenger.client_id) != null)
+            if (this.cloudMessenger.GameController.getPlayer(this.cloudMessenger.ClientID) != null)
             {
-                this.player.Move(this.cloudMessenger.gameController.getPlayer(this.cloudMessenger.client_id).getNextLerpPosition(), this.cloudMessenger.gameController.getPlayer(this.cloudMessenger.client_id).getNextLerpRotation());
+                this.player.Move(this.cloudMessenger.GameController.getPlayer(this.cloudMessenger.ClientID).getNextLerpPosition(), this.cloudMessenger.GameController.getPlayer(this.cloudMessenger.ClientID).getNextLerpRotation());
                 this.cam.Pos = this.player.Position;
             }
         }
