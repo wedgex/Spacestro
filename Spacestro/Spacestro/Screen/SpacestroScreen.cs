@@ -154,6 +154,11 @@ namespace Spacestro.Screen
                 }
             }
 
+            foreach (Enemy en in this.cloudMessenger.gameController.enemies)
+            {
+                spriteBatch.Draw(ufoTexture, en.getNextLerpPosition(), null, Color.White, en.getNextLerpRotation(), new Vector2((float)(ufoTexture.Width / 2), (float)(ufoTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
+            }
+
             spriteBatch.DrawString(font_S, "<poemdexter> I'm a big ol' chat thing.", this.cam.Pos - new Vector2(0.5f * viewport.Width, -0.38f * viewport.Height), Color.Yellow);
 
             spriteBatch.Draw(asteroid, new Vector2(600, 600), new Rectangle(0, 0, asteroid.Width, asteroid.Height), Color.White);
