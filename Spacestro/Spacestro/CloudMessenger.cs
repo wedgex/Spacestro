@@ -123,9 +123,9 @@ namespace Spacestro
 
                 case 11: // enemy
                     int ekey = msg.ReadByte();
-                    if (gameController.inEnemyList(ekey))
+                    if (this.GameController.inEnemyList(ekey))
                     {
-                        gameController.getEnemy(ekey).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
+                        this.GameController.getEnemy(ekey).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
                     }
                     else
                     {
@@ -133,7 +133,7 @@ namespace Spacestro
                         f1 = msg.ReadFloat();
                         f2 = msg.ReadFloat();
                         f3 = msg.ReadFloat();
-                        gameController.enemies.Add(new Enemy(new Vector2(f1, f2), ekey));
+                        this.GameController.enemies.Add(new Enemy(new Vector2(f1, f2), ekey));
                     }
                     break;
 

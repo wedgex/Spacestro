@@ -154,7 +154,7 @@ namespace Spacestro.Screen
                 }
             }
 
-            foreach (Enemy en in this.cloudMessenger.gameController.enemies)
+            foreach (Enemy en in this.cloudMessenger.GameController.enemies)
             {
                 spriteBatch.Draw(ufoTexture, en.getNextLerpPosition(), null, Color.White, en.getNextLerpRotation(), new Vector2((float)(ufoTexture.Width / 2), (float)(ufoTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
             }
