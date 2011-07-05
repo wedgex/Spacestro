@@ -6,6 +6,7 @@ using Spacestro.Cloud.Library;
 using Spacestro.Entities;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
+using Spacestro.Cloud.AI;
 
 namespace Spacestro.Cloud
 {
@@ -36,6 +37,7 @@ namespace Spacestro.Cloud
 
         public List<Enemy> enemyList;
         private int maxEnemies = 10;
+        private int aggroRange = 500;
 
         private int bulletkey = 0;
         private int entitykey = 0;
@@ -71,12 +73,34 @@ namespace Spacestro.Cloud
         // this is where all server side game logic happens every tick
         public void tick()
         {
-            createNewEnemy(); // hooray enemies
-            moveAll();        // to be implemented for enemies
-            updateFireRates();// hooray enemies
-            checkCollisions();// to be implemented for enemies
+            updateFireRates();
+            createNewEnemy(); 
+            checkAggroRange();
+            moveAll();
+            enemiesShoot();
+            checkCollisions(); // to be implemented for enemies
             cleanLists();
 
+        }
+
+        private void enemiesShoot()
+        {
+            foreach (Enemy e in enemyList)
+            {
+                if (e.canShoot() && !e.TargetPlayer.Equals(""))
+                {
+                    float angletofire = AIUtil.getAnglePredictPlayerPos(e, getPlayer(e.TargetPlayer));
+
+                    if (angletofire == -1) // can't hit player so skip
+                        continue;
+
+                    // we can hit player to fire away!
+                    projectiles.Add(new Projectile(e.Position, angletofire, bulletkey, e.ID.ToString()));
+                    e.firecounter = e.FireRate;
+                    bulletkey++;
+
+                }
+            }
         }
 
         private void createNewEnemy()
@@ -87,6 +111,24 @@ namespace Spacestro.Cloud
                 // create new enemies
                 enemyList.Add(new Enemy(new Vector2(random.Next(worldWidth), random.Next(worldHeight)), entitykey));
                 entitykey++;
+            }
+        }
+
+        private void checkAggroRange()
+        {
+            foreach (Enemy e in enemyList)
+            {
+                if (e.TargetPlayer.Equals(""))
+                {
+                    foreach (Player p in playerList)
+                    {
+                        if (Vector2.Distance(p.Position, e.Position) < aggroRange)
+                        {
+                            e.TargetPlayer = p.Name;
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -214,7 +256,12 @@ namespace Spacestro.Cloud
             {
                 foreach (Enemy enemy in enemyList)
                 {
-                    //enemy.Move();
+                    if (!enemy.TargetPlayer.Equals(""))
+                    {
+                        enemy.Rotation = AIUtil.getAnglePointingAt(enemy.Position, getPlayer(enemy.TargetPlayer).Position);
+                        enemy.Accelerate();
+                        enemy.Move();
+                    }
                 }
             }
         }
