@@ -19,7 +19,7 @@
     <ApplicationIcon>Game.ico</ApplicationIcon>
     <Thumbnail>GameThumbnail.png</Thumbnail>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\poemdexter\Desktop\pub\</PublishUrl>
+    <PublishUrl>C:\Users\wedge\Desktop\pub\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -29,8 +29,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>4</ApplicationRevision>
+    <ApplicationRevision>5</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -151,6 +150,10 @@
     <ProjectReference Include="..\..\Spacestro.Cloud.Library\Spacestro.Cloud.Library.csproj">
       <Project>{486DE6DE-179B-4308-BECF-FCBADD1C07E7}</Project>
       <Name>Spacestro.Cloud.Library</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Spacestro.Cloud\Spacestro.Cloud.csproj">
+      <Project>{84E5454D-966B-464C-A466-54776C4BF90E}</Project>
+      <Name>Spacestro.Cloud</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Spacestro.Entities\Spacestro.Entities.csproj">
       <Project>{57935BE8-9F72-4228-A268-F672F6E7540F}</Project>

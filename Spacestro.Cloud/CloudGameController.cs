@@ -45,6 +45,8 @@ namespace Spacestro.Cloud
         double nextUpdate = NetTime.Now;
         private double ticksPerSecond = 20.0;
 
+        private bool running = false;
+
         public CloudGameController()
         {
             playerList = new List<Player>();
@@ -55,9 +57,16 @@ namespace Spacestro.Cloud
             pList = new Dictionary<long, string>();
         }
 
+        public void Stop()
+        {
+            this.running = false;
+        }
+
         public void run()
         {
-            while (true)
+            this.running = true;
+
+            while (this.running)
             {
                 now = NetTime.Now;
                 if (now > nextUpdate)

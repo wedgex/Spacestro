@@ -9,7 +9,7 @@ using Spacestro.Entities;
 
 namespace Spacestro.Cloud
 {
-    class Cloud
+    public class Cloud
     {
         private NetServer server;
         private double messagesPerSecond = 20.0;
@@ -19,29 +19,39 @@ namespace Spacestro.Cloud
         private bool disconnectEvent = false;
         private string disconnectPlayer = "", val = "";
         private long disconnectRID;
+        private bool running = false;
 
         public Cloud(string configName, int port)
         {
             NetPeerConfiguration config = new NetPeerConfiguration(configName);
             config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
             config.Port = port;
-
+            config.NetworkThreadName = "Cloud server thread";
             this.server = new NetServer(config);
+            
 
             cloudGC = new CloudGameController();
 
             Thread thread = new Thread(new ThreadStart(cloudGC.run));
+            thread.Name = "Game Controller thread";
             thread.Start();
+        }
+
+        public void Stop()
+        {
+            this.cloudGC.Stop();
+            this.running = false;            
         }
 
         public void Start()
         {
             this.server.Start();
+            this.running = true;
 
             double nextSendUpdates = NetTime.Now;
             double now;
 
-            while (!Console.KeyAvailable || Console.ReadKey().Key != ConsoleKey.Escape)
+            while (running)
             {
                 NetIncomingMessage msg;
                 while ((msg = server.ReadMessage()) != null)
@@ -197,7 +207,7 @@ namespace Spacestro.Cloud
                 Thread.Sleep(1);
             }
 
-            Console.WriteLine("Server stopping.");
+            this.server.Shutdown("Server stopping.");            
         }
 
         protected void handleMessage(NetIncomingMessage msg)

@@ -33,12 +33,18 @@ namespace Spacestro
             }
         }
 
+        public void Stop()
+        {
+            this.netClient.Shutdown("Messenger Shutting down");
+        }
+
         public CloudMessenger(string configName, string ipAddress)
         {
             this.ClientID = Path.GetRandomFileName().Replace(".", "");  // creates random string; also is awesome
 
             NetPeerConfiguration config = new NetPeerConfiguration(configName);
             config.EnableMessageType(NetIncomingMessageType.DiscoveryResponse);
+            config.NetworkThreadName = "Cloud Messenger thread";
 
             this.netClient = new NetClient(config);
             this.netClient.Start();

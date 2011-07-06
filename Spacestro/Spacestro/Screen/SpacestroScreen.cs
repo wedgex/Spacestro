@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Spacestro.Cloud.Library;
 using Spacestro.Entities;
+using System.Threading;
 
 namespace Spacestro.Screen
 {
@@ -23,17 +24,22 @@ namespace Spacestro.Screen
         SpriteFont font, font_S;
         Viewport viewport;
         GameCamera cam;
+        Thread spServerThread;
+
 
         int worldWidth = 2000;
         int worldHeight = 2000;
         
         InputState inputState;
-        
+
+        private Cloud.Cloud spServer;
         private CloudMessenger cloudMessenger;
 
-        public SpacestroScreen(CloudMessenger messenger)
+        public SpacestroScreen(CloudMessenger messenger, Thread spServerThread = null, Spacestro.Cloud.Cloud spServer = null)
         {
             this.cloudMessenger = messenger;
+            this.spServerThread = spServerThread;
+            this.spServer = spServer;
         }
 
         #region Load and Unload Content
@@ -66,7 +72,11 @@ namespace Spacestro.Screen
 
         public override void UnloadContent()
         {
-            // Fuck unloading content, I'm gonna hang on to this memory FOREVER
+            this.cloudMessenger.Stop();
+            if (this.spServer != null)
+            {
+                this.spServer.Stop();
+            }            
         }
         #endregion
 

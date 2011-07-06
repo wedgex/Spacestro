@@ -13,6 +13,8 @@ using System;
 using Spacestro.Screen;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.Threading;
+using Spacestro;
 #endregion
 
 namespace GameStateManagement
@@ -36,18 +38,18 @@ namespace GameStateManagement
             : base("")
         {
             // Create our menu entries.
-            MenuEntry playGameMenuEntry = new MenuEntry("Play Game");
-            MenuEntry optionsMenuEntry = new MenuEntry("Options");
+            MenuEntry singleplayerGameMenuEntry = new MenuEntry("Singleplayer");
+            MenuEntry multiplayerGameMenuEntry = new MenuEntry("Multiplayer");            
             MenuEntry exitMenuEntry = new MenuEntry("Exit");
 
             // Hook up menu event handlers.
-            playGameMenuEntry.Selected += PlayGameMenuEntrySelected;
-            optionsMenuEntry.Selected += OptionsMenuEntrySelected;
+            singleplayerGameMenuEntry.Selected += SingleplayerGameMenuEntrySelected;
+            multiplayerGameMenuEntry.Selected += MultiplayerGameMenuEntrySelected;            
             exitMenuEntry.Selected += ExitSelected;
 
             // Add entries to the menu.
-            MenuEntries.Add(playGameMenuEntry);
-            MenuEntries.Add(optionsMenuEntry);
+            MenuEntries.Add(singleplayerGameMenuEntry);
+            MenuEntries.Add(multiplayerGameMenuEntry);            
             MenuEntries.Add(exitMenuEntry);
         }
 
@@ -69,24 +71,31 @@ namespace GameStateManagement
 
         #region Handle Input
 
+        void SingleplayerGameMenuEntrySelected(object sender, EventArgs e)
+        {
+            // start a thread with the server
+            Spacestro.Cloud.Cloud cloud = new Spacestro.Cloud.Cloud("spacestro", 8383);
+            ThreadStart serverStart = new ThreadStart(cloud.Start);
+            Thread serverThread = new Thread(serverStart);
+            serverThread.Name = "Single Player Server";
+            serverThread.Start();
+            // create cloudMessenger
+            CloudMessenger messenger = new CloudMessenger("spacestro", "localhost");
+
+            // HACK: ghettofabulous.
+            while (!messenger.Connected) ;
+
+            // launch the game with the cloud messenger
+            LoadingScreen.Load(this.ScreenManager, true, new SpacestroScreen(messenger, spServer:cloud));            
+        }
 
         /// <summary>
         /// Event handler for when the Play Game menu entry is selected.
         /// </summary>
-        void PlayGameMenuEntrySelected(object sender, EventArgs e)
+        void MultiplayerGameMenuEntrySelected(object sender, EventArgs e)
         {
             this.ScreenManager.AddScreen(new ConnectionScreen());            
         }
-
-
-        /// <summary>
-        /// Event handler for when the Options menu entry is selected.
-        /// </summary>
-        void OptionsMenuEntrySelected(object sender, EventArgs e)
-        {
-            
-        }
-
 
         void ExitSelected(object sender, EventArgs e)
         {
