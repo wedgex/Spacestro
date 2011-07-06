@@ -20,18 +20,20 @@ namespace Spacestro.Entities
         public int ID { get; set; }
         public int FireRate { get; set; }
         public int firecounter = 0;
+        public string TargetPlayer { get; set; }
 
         public Texture2D ufoTexture;
         public bool Active;
 
         public Enemy()
         {
-            this.Acceleration = 0.1f;
+            this.Acceleration = 0.2f;
             this.Velocity = Vector2.Zero;
             this.TurnSpeed = 0.1f;
             this.MaxSpeed = 5.0f;
             this.Rotation = 0.0f;
             this.FireRate = 15;
+            this.TargetPlayer = "";
         }
 
         public Enemy(Vector2 position, int id)
@@ -40,10 +42,6 @@ namespace Spacestro.Entities
             this.Position = position;
             this.Active = true;
             this.ID = id;
-            Vector2 tempV = new Vector2(this.Acceleration * (float)Math.Cos(this.Rotation), this.Acceleration * (float)Math.Sin(this.Rotation));
-            tempV.Normalize();
-            tempV = new Vector2(tempV.X * this.MaxSpeed, tempV.Y * this.MaxSpeed);
-            this.Velocity = tempV;
         }
 
         public int Width
