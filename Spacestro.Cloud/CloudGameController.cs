@@ -12,14 +12,45 @@ namespace Spacestro.Cloud
 {
     public struct Collision
     {
-        public Player player { get; set; }
+        public Player player1 { get; set; }
+        public Player player2 { get; set; }
         public Projectile projectile { get; set; }
+        public Enemy enemy { get; set; }
+        public int CID { get; set; }
 
-        public Collision(Player p, Projectile proj)
+        public Collision(Object obj1, Object obj2)
             : this()
         {
-            this.player = p;
-            this.projectile = proj;
+            if (obj1 is Player)
+            {
+                if (obj2 is Player)
+                {
+                    this.CID = 2;
+                    this.player1 = (Player)obj1;
+                    this.player2 = (Player)obj2;
+                }
+                else if (obj2 is Projectile)
+                {
+                    this.CID = 2;
+                    this.player1 = (Player)obj1;
+                    this.projectile = (Projectile)obj2;
+                }
+                else if (obj2 is Enemy)
+                {
+                    this.CID = 3;
+                    this.player1 = (Player)obj1;
+                    this.enemy = (Enemy)obj2;
+                }
+            }
+            else if (obj1 is Enemy)
+            {
+                if (obj2 is Projectile)
+                {
+                    this.CID = 4;
+                    this.enemy = (Enemy)obj1;
+                    this.projectile = (Projectile)obj2;
+                }
+            }
         }
     }
 
@@ -83,11 +114,12 @@ namespace Spacestro.Cloud
         public void tick()
         {
             updateFireRates();
-            createNewEnemy(); 
+            createNewEnemy();
             checkAggroRange();
             moveAll();
             enemiesShoot();
-            checkCollisions(); // to be implemented for enemies
+            checkCollisions();
+            handleCollisions();
             cleanLists();
 
         }
@@ -141,10 +173,32 @@ namespace Spacestro.Cloud
             }
         }
 
+        /*
+         * collisions checked in this order:
+         * 
+         * for every player ->
+         *   check against other players
+         *   check against bullets
+         *   check against enemies
+         *   
+         * for every enemy ->
+         *   check against bullets
+         */
         private void checkCollisions()
         {
+            // for every player
             foreach (Player p in playerList)
             {
+                // check against players
+                foreach (Player pcheck in playerList)
+                {
+                    if (p.Name != pcheck.Name && p.getRectangle().Intersects(pcheck.getRectangle()))
+                    {
+                        collisionList.Add(new Collision(p, pcheck));
+                    }
+                }
+
+                // check against bullets
                 foreach (Projectile proj in projectiles)
                 {
                     if (proj.Active && !p.Name.Equals(proj.Shooter))
@@ -156,7 +210,35 @@ namespace Spacestro.Cloud
                         }
                     }
                 }
+
+                // check against enemies
+                foreach (Enemy e in enemyList)
+                {
+                    if (e.getRectangle().Intersects(p.getRectangle()))
+                    {
+                        collisionList.Add(new Collision(p, e));
+                    }
+                }
             }
+
+            // for every enemy
+            foreach (Enemy e in enemyList)
+            {
+                // check against bullets
+                foreach (Projectile proj in projectiles)
+                {
+                    if (e.getRectangle().Intersects(proj.getRectangle()))
+                    {
+                        collisionList.Add(new Collision(e, proj));
+                        proj.Active = false;
+                    }
+                }
+            }
+        }
+
+        public void handleCollisions()
+        {
+            // we have a collision list full of this ticks collisions.  do shit with it.
         }
 
         public void clearCollisionsList()
@@ -226,7 +308,7 @@ namespace Spacestro.Cloud
                     break;
                 }
             }
-            
+
         }
 
         public void createBullet(Player player)

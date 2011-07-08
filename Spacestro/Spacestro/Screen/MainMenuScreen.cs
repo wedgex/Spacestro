@@ -82,7 +82,7 @@ namespace GameStateManagement
             // create cloudMessenger
             CloudMessenger messenger = new CloudMessenger("spacestro", "localhost");
 
-            // HACK: ghettofabulous.
+            // TODO fix this ghettofabulous hack.
             while (!messenger.Connected) ;
 
             // launch the game with the cloud messenger

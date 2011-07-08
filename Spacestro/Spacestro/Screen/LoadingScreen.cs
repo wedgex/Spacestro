@@ -117,7 +117,7 @@ namespace GameStateManagement
         /// </summary>
         public override void Draw(GameTime gameTime)
         {
-            // TODO: I'd like to figure out a way to let the background screen keep drawing
+            // TODO I'd like to figure out a way to let the background screen keep drawing
             // the paralax wihout a spit second of purple when transitioning.
             this.ScreenManager.GraphicsDevice.Clear(Color.Black);
 

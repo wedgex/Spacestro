@@ -174,9 +174,11 @@ namespace Spacestro.Cloud
                             {
                                 foreach (Collision c in cloudGC.collisionList)
                                 {
+                                    // TODO [poem] we need to determine what kind of collision it is based on CID
+
                                     NetOutgoingMessage sendMsg = server.CreateMessage();
                                     sendMsg.Write((byte)15); // packet id
-                                    sendMsg.Write(c.player.Name);
+                                    sendMsg.Write(c.player1.Name);
                                     sendMsg.Write(c.projectile.ID);
                                     server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
                                 }

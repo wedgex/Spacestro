@@ -49,7 +49,6 @@ namespace Spacestro
             this.netClient = new NetClient(config);
             this.netClient.Start();
 
-            //TODO need to load this from config or something.
             this.netClient.DiscoverKnownPeer(ipAddress, 8383);
 
             this.GameController = new GameController();
@@ -143,7 +142,8 @@ namespace Spacestro
                     }
                     break;
 
-                case 15: // bullet collision
+                case 15: // collision
+                    // TODO [poem] fix this to handle ALL types of collisions
                     this.GameController.getPlayer(msg.ReadString()).getHit();
                     int tempID = msg.ReadByte();
                     if (this.GameController.inProjectileList(tempID))
