@@ -166,7 +166,10 @@ namespace Spacestro.Screen
 
             foreach (Enemy en in this.cloudMessenger.GameController.enemies)
             {
-                spriteBatch.Draw(ufoTexture, en.getNextLerpPosition(), null, Color.White, 0, new Vector2((float)(ufoTexture.Width / 2), (float)(ufoTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
+                if (en.Active)
+                {
+                    spriteBatch.Draw(ufoTexture, en.getNextLerpPosition(), null, Color.White, 0, new Vector2((float)(ufoTexture.Width / 2), (float)(ufoTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
+                }
             }
 
             spriteBatch.DrawString(font_S, "Spacestro alpha (milestone 2)", this.cam.Pos - new Vector2(0.5f * viewport.Width, -0.38f * viewport.Height), Color.Yellow);

@@ -34,14 +34,19 @@ namespace Spacestro.Entities
             this.Rotation = 0.0f;
             this.FireRate = 15;
             this.TargetPlayer = "";
+            this.Active = true;
         }
 
         public Enemy(Vector2 position, int id)
             : this()
         {
             this.Position = position;
-            this.Active = true;
             this.ID = id;
+        }
+
+        public void getHit()
+        {
+            this.Active = false;
         }
 
         public int Width

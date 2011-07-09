@@ -25,7 +25,7 @@ namespace Spacestro.Cloud
             {
                 if (obj2 is Player)
                 {
-                    this.CID = 2;
+                    this.CID = 1;
                     this.player1 = (Player)obj1;
                     this.player2 = (Player)obj2;
                 }
@@ -67,6 +67,7 @@ namespace Spacestro.Cloud
         public List<Collision> collisionList;
 
         public List<Enemy> enemyList;
+        public List<Enemy> removeEnemyList;
         private int maxEnemies = 10;
         private int aggroRange = 500;
 
@@ -87,6 +88,7 @@ namespace Spacestro.Cloud
             removeProjList = new List<Projectile>();
             collisionList = new List<Collision>();
             enemyList = new List<Enemy>();
+            removeEnemyList = new List<Enemy>();
             pList = new Dictionary<long, string>();
         }
 
@@ -119,29 +121,7 @@ namespace Spacestro.Cloud
             moveAll();
             enemiesShoot();
             checkCollisions();
-            handleCollisions();
             cleanLists();
-
-        }
-
-        private void enemiesShoot()
-        {
-            foreach (Enemy e in enemyList)
-            {
-                if (e.canShoot() && !e.TargetPlayer.Equals(""))
-                {
-                    float angletofire = AIUtil.getAnglePredictPlayerPos(e, getPlayer(e.TargetPlayer));
-
-                    if (angletofire == -1) // can't hit player so skip
-                        continue;
-
-                    // we can hit player to fire away!
-                    projectiles.Add(new Projectile(e.Position, angletofire, bulletkey, e.ID.ToString()));
-                    e.firecounter = e.FireRate;
-                    bulletkey++;
-
-                }
-            }
         }
 
         private void createNewEnemy()
@@ -177,12 +157,12 @@ namespace Spacestro.Cloud
          * collisions checked in this order:
          * 
          * for every player ->
-         *   check against other players
-         *   check against bullets
-         *   check against enemies
+         *   check against other players (CID 1)
+         *   check against bullets (CID 2)
+         *   check against enemies (CID 3)
          *   
          * for every enemy ->
-         *   check against bullets
+         *   check against bullets (CID 4)
          */
         private void checkCollisions()
         {
@@ -227,18 +207,17 @@ namespace Spacestro.Cloud
                 // check against bullets
                 foreach (Projectile proj in projectiles)
                 {
-                    if (e.getRectangle().Intersects(proj.getRectangle()))
+                    if (proj.Active && !proj.Shooter.Equals("enemy"))
                     {
-                        collisionList.Add(new Collision(e, proj));
-                        proj.Active = false;
+                        if (e.getRectangle().Intersects(proj.getRectangle()))
+                        {
+                            collisionList.Add(new Collision(e, proj));
+                            proj.Active = false;
+                            e.getHit();
+                        }
                     }
                 }
             }
-        }
-
-        public void handleCollisions()
-        {
-            // we have a collision list full of this ticks collisions.  do shit with it.
         }
 
         public void clearCollisionsList()
@@ -291,7 +270,7 @@ namespace Spacestro.Cloud
 
                     if (inState.Space)
                     {
-                        createBullet(player);
+                        this.createBullet(player);
                     }
                     break;
                 }
@@ -315,9 +294,28 @@ namespace Spacestro.Cloud
         {
             if (player.canShoot())
             {
-                projectiles.Add(new Projectile(player.Position, player.Rotation, bulletkey, player.Name));
+                projectiles.Add(new Projectile(player.Position, player.Rotation, this.bulletkey, player.Name));
                 player.firecounter = player.FireRate;
-                bulletkey++;
+                this.bulletkey++;
+            }
+        }
+
+        private void enemiesShoot()
+        {
+            foreach (Enemy e in enemyList)
+            {
+                if (e.canShoot() && !e.TargetPlayer.Equals(""))
+                {
+                    float angletofire = AIUtil.getAnglePredictPlayerPos(e, getPlayer(e.TargetPlayer));
+
+                    if (angletofire == -1) // can't hit player mathematically so skip
+                        continue;
+
+                    // we can hit player to fire away!
+                    projectiles.Add(new Projectile(e.Position, angletofire, this.bulletkey, "enemy"));
+                    e.firecounter = e.FireRate;
+                    this.bulletkey++;
+                }
             }
         }
 
@@ -347,12 +345,16 @@ namespace Spacestro.Cloud
             {
                 foreach (Enemy enemy in enemyList)
                 {
-                    if (!enemy.TargetPlayer.Equals(""))
+                    if (enemy.Active)
                     {
-                        enemy.Rotation = AIUtil.getAnglePointingAt(enemy.Position, getPlayer(enemy.TargetPlayer).Position);
-                        enemy.Accelerate();
-                        enemy.Move();
+                        if (!enemy.TargetPlayer.Equals(""))
+                        {
+                            enemy.Rotation = AIUtil.getAnglePointingAt(enemy.Position, getPlayer(enemy.TargetPlayer).Position);
+                            enemy.Accelerate();
+                            enemy.Move();
+                        }
                     }
+                    else { removeEnemyList.Add(enemy); }
                 }
             }
         }
@@ -364,6 +366,14 @@ namespace Spacestro.Cloud
                 foreach (Projectile proj in removeProjList)
                 {
                     projectiles.Remove(proj);
+                }
+            }
+
+            if (removeEnemyList.Count != 0)
+            {
+                foreach (Enemy e in removeEnemyList)
+                {
+                    enemyList.Remove(e);
                 }
             }
         }

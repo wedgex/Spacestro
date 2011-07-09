@@ -122,7 +122,7 @@ namespace Spacestro
                         f1 = msg.ReadFloat();
                         f2 = msg.ReadFloat();
                         f3 = msg.ReadFloat();
-                        this.GameController.projectiles.Add(new Projectile(new Vector2(f1, f2), f3, key, this.ClientID));
+                        this.GameController.projectiles.Add(new Projectile(new Vector2(f1, f2), f3, key, msg.ReadString()));
                     }
                     break;
 
@@ -143,11 +143,31 @@ namespace Spacestro
                     break;
 
                 case 15: // collision
-                    // TODO [poem] fix this to handle ALL types of collisions
-                    this.GameController.getPlayer(msg.ReadString()).getHit();
                     int tempID = msg.ReadByte();
-                    if (this.GameController.inProjectileList(tempID))
-                        this.GameController.getProjectile(tempID).Active = false;
+                    switch (tempID)
+                    {
+                        case 1: // player on player
+                            // we don't mess with velocity here since we get that as seperate packet.
+                            // we'll probably use this spot for animation or whatever.
+                            break;
+                        case 2: // player on bullet
+                            this.GameController.getPlayer(msg.ReadString()).getHit();
+                            this.GameController.getProjectile(msg.ReadByte()).Active = false;
+                            break;
+                        case 3: // player on enemy
+                            // same as case 1
+                            break;
+                        case 4: // enemy on bullet
+                            this.GameController.getEnemy(msg.ReadByte()).getHit();
+                            int pid = msg.ReadByte();
+                            if (this.GameController.inProjectileList(pid) && pid != 0)
+                            {
+                                this.GameController.getProjectile(pid).Active = false;
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                     break;
 
                 default:

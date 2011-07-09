@@ -84,7 +84,7 @@ namespace Spacestro.Cloud
                                 Console.WriteLine(msg.SenderConnection.Tag.ToString() + " disconnected!");
                                 
                                 disconnectEvent = true;
-                                if (cloudGC.pList.TryGetValue(msg.SenderConnection.RemoteUniqueIdentifier, out val))
+                                if (this.cloudGC.pList.TryGetValue(msg.SenderConnection.RemoteUniqueIdentifier, out val))
                                 {
                                     disconnectPlayer = val;
                                     disconnectRID = msg.SenderConnection.RemoteUniqueIdentifier;
@@ -125,7 +125,7 @@ namespace Spacestro.Cloud
                             {
                                 if (player.Tag != null) // have client id
                                 {
-                                    p1 = cloudGC.getPlayer(player.Tag.ToString());
+                                    p1 = this.cloudGC.getPlayer(player.Tag.ToString());
                                     if (p1 != null) // player still connected
                                     {
                                         NetOutgoingMessage sendMsg = server.CreateMessage();
@@ -140,7 +140,7 @@ namespace Spacestro.Cloud
                             }
 
                             // tell player of the bullets
-                            foreach (Projectile proj in cloudGC.projectiles)
+                            foreach (Projectile proj in this.cloudGC.projectiles)
                             {
                                 if (proj.Active)
                                 {
@@ -150,14 +150,15 @@ namespace Spacestro.Cloud
                                     sendMsg.Write(proj.Position.X);
                                     sendMsg.Write(proj.Position.Y);
                                     sendMsg.Write(proj.Rotation);
+                                    sendMsg.Write(proj.Shooter);
                                     server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
                                 }
                             }
 
                             // tell player of the enemies
-                            if (cloudGC.enemyList.Count != 0)
+                            if (this.cloudGC.enemyList.Count != 0)
                             {
-                                foreach (Enemy enemy in cloudGC.enemyList)
+                                foreach (Enemy enemy in this.cloudGC.enemyList)
                                 {
                                     NetOutgoingMessage sendMsg = server.CreateMessage();
                                     sendMsg.Write((byte)11);
@@ -170,16 +171,34 @@ namespace Spacestro.Cloud
                             }
 
                             // tell player of collisions
-                            if (cloudGC.collisionList.Count != 0)
+                            if (this.cloudGC.collisionList.Count != 0)
                             {
-                                foreach (Collision c in cloudGC.collisionList)
-                                {
-                                    // TODO [poem] we need to determine what kind of collision it is based on CID
-
+                                foreach (Collision c in this.cloudGC.collisionList)
+                                { 
                                     NetOutgoingMessage sendMsg = server.CreateMessage();
                                     sendMsg.Write((byte)15); // packet id
-                                    sendMsg.Write(c.player1.Name);
-                                    sendMsg.Write(c.projectile.ID);
+                                    sendMsg.Write((byte)c.CID); // collision id
+                                    
+                                    if (c.CID == 1) // player on player
+                                    {
+                                        sendMsg.Write(c.player1.Name);
+                                        sendMsg.Write(c.player2.Name);
+                                    }
+                                    else if (c.CID == 2) // player on bullet
+                                    {
+                                        sendMsg.Write(c.player1.Name);
+                                        sendMsg.Write((byte)c.projectile.ID);
+                                    }
+                                    else if (c.CID == 3) // player on enemy
+                                    {
+                                        sendMsg.Write(c.player1.Name);
+                                        sendMsg.Write(c.enemy.ID);
+                                    }
+                                    else if (c.CID == 4) // enemy on bullet
+                                    {
+                                        sendMsg.Write((byte)c.enemy.ID);
+                                        sendMsg.Write((byte)c.projectile.ID);
+                                    }
                                     server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
                                 }
                             }
@@ -195,12 +214,12 @@ namespace Spacestro.Cloud
                         }
                     }
 
-                    cloudGC.clearCollisionsList();
+                    this.cloudGC.clearCollisionsList();
 
                     if (disconnectEvent)
                     {
                         disconnectEvent = false;
-                        cloudGC.removePlayer(disconnectPlayer, disconnectRID);
+                        this.cloudGC.removePlayer(disconnectPlayer, disconnectRID);
                     }
 
                     nextSendUpdates += (1.0 / messagesPerSecond);
@@ -215,7 +234,6 @@ namespace Spacestro.Cloud
         protected void handleMessage(NetIncomingMessage msg)
         {
             int packetId = msg.ReadByte();
-            // Console.WriteLine(packetId);
 
             switch (packetId)
             {
@@ -224,14 +242,14 @@ namespace Spacestro.Cloud
                     {
                         msg.SenderConnection.Tag = msg.ReadString();
                         Console.WriteLine(msg.SenderConnection.Tag.ToString());
-                        cloudGC.addPlayer(msg.SenderConnection.Tag.ToString(), msg.SenderConnection.RemoteUniqueIdentifier);
+                        this.cloudGC.addPlayer(msg.SenderConnection.Tag.ToString(), msg.SenderConnection.RemoteUniqueIdentifier);
                         Console.WriteLine(msg.SenderConnection.Tag.ToString() + " connected!");
                     }
                     break;
                 case 1: // keyboards!
                     inState.resetStates();
                     inState.setStates(msg.ReadByte(), msg.ReadByte(), msg.ReadByte(), msg.ReadByte(), msg.ReadByte());
-                    cloudGC.handleInputState(inState, msg.SenderConnection.Tag.ToString());
+                    this.cloudGC.handleInputState(inState, msg.SenderConnection.Tag.ToString());
                     // tell player new position
                     break;
                 default:
