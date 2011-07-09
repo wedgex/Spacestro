@@ -175,6 +175,9 @@ namespace Spacestro.Cloud
                     if (p.Name != pcheck.Name && p.getRectangle().Intersects(pcheck.getRectangle()))
                     {
                         collisionList.Add(new Collision(p, pcheck));
+                        p.Velocity = p.Velocity * -0.5f;
+                        pcheck.Velocity = pcheck.Velocity * -0.5f;
+                        // TODO [poem] add delay between collisions
                     }
                 }
 
@@ -197,6 +200,8 @@ namespace Spacestro.Cloud
                     if (e.getRectangle().Intersects(p.getRectangle()))
                     {
                         collisionList.Add(new Collision(p, e));
+                        p.Velocity = p.Velocity * -0.5f;
+                        e.Velocity = e.Velocity * -0.5f;
                     }
                 }
             }

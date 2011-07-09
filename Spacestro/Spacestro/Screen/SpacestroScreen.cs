@@ -26,6 +26,7 @@ namespace Spacestro.Screen
         GameCamera cam;
         Thread spServerThread;
 
+        Texture2D ufobox, playerbox;
 
         int worldWidth = 2000;
         int worldHeight = 2000;
@@ -60,6 +61,9 @@ namespace Spacestro.Screen
             playerTexture = content.Load<Texture2D>("player");
             bulletTexture = content.Load<Texture2D>("bullet");
             ufoTexture = content.Load<Texture2D>("UFO");
+
+            ufobox = content.Load<Texture2D>("ufobox");
+            playerbox = content.Load<Texture2D>("playerbox");
             
             font = content.Load<SpriteFont>("Orbitron");
             font_S = content.Load<SpriteFont>("Orbitron_S");
@@ -140,9 +144,11 @@ namespace Spacestro.Screen
                 {
                     // draw player
                     this.player.Draw(spriteBatch);
+                    spriteBatch.Draw(playerbox, p.getRectangle(),Color.White);
 
                     // draw something above player
                     spriteBatch.DrawString(font_S, "Hit: " + p.hitCount.ToString(), this.player.Position + new Vector2(-40, -40), Color.PeachPuff);
+                    
                 }
                 else // it's someone else
                 {
@@ -169,6 +175,7 @@ namespace Spacestro.Screen
                 if (en.Active)
                 {
                     spriteBatch.Draw(ufoTexture, en.getNextLerpPosition(), null, Color.White, 0, new Vector2((float)(ufoTexture.Width / 2), (float)(ufoTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(ufobox, en.getRectangle(), Color.White);
                 }
             }
 

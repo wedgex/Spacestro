@@ -140,7 +140,7 @@ namespace Spacestro.Entities
 
         public Rectangle getRectangle()
         {
-            return new Rectangle((int)this.Position.X, (int)this.Position.Y, 35, 35);
+            return new Rectangle((int)(this.Position.X - (35 / 2)), (int)(this.Position.Y - (35 / 2)), 35, 35);
         }
 
         public bool canShoot()
