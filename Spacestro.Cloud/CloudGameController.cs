@@ -116,6 +116,7 @@ namespace Spacestro.Cloud
         public void tick()
         {
             updateFireRates();
+            updatePlayerCollisionTickers();
             createNewEnemy();
             checkAggroRange();
             moveAll();
@@ -150,6 +151,13 @@ namespace Spacestro.Cloud
                         }
                     }
                 }
+                else
+                {
+                    if (getPlayer(e.TargetPlayer) == null)
+                    {
+                        e.TargetPlayer = "";
+                    }
+                }
             }
         }
 
@@ -174,10 +182,15 @@ namespace Spacestro.Cloud
                 {
                     if (p.Name != pcheck.Name && p.getRectangle().Intersects(pcheck.getRectangle()))
                     {
-                        collisionList.Add(new Collision(p, pcheck));
-                        p.Velocity = p.Velocity * -0.5f;
-                        pcheck.Velocity = pcheck.Velocity * -0.5f;
-                        // TODO [poem] add delay between collisions
+                        // make sure we haven't collided recently
+                        if (!p.collidedWith.ContainsKey(pcheck.Name))
+                        {
+                            p.collidedWith.Add(pcheck.Name, 10);
+                            pcheck.collidedWith.Add(p.Name, 10);
+                            collisionList.Add(new Collision(p, pcheck));
+                            p.Velocity = p.Velocity * -0.5f;
+                            pcheck.Velocity = pcheck.Velocity * -0.5f;
+                        }
                     }
                 }
 
@@ -199,9 +212,14 @@ namespace Spacestro.Cloud
                 {
                     if (e.getRectangle().Intersects(p.getRectangle()))
                     {
-                        collisionList.Add(new Collision(p, e));
-                        p.Velocity = p.Velocity * -0.5f;
-                        e.Velocity = e.Velocity * -0.5f;
+                        // make sure we haven't collided recently
+                        if (!p.collidedWith.ContainsKey(e.ID.ToString()))
+                        {
+                            p.collidedWith.Add(e.ID.ToString(), 10);
+                            collisionList.Add(new Collision(p, e));
+                            p.Velocity = p.Velocity * -0.5f;
+                            e.Velocity = e.Velocity * -0.5f;
+                        }
                     }
                 }
             }
@@ -398,6 +416,14 @@ namespace Spacestro.Cloud
                     if (enemy.firecounter != 0)
                         enemy.firecounter--;
                 }
+            }
+        }
+
+        private void updatePlayerCollisionTickers()
+        {
+            foreach (Player player in playerList)
+            {
+                player.tickDownCollidedWithList();
             }
         }
     }

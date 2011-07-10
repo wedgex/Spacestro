@@ -144,7 +144,9 @@ namespace Spacestro.Screen
                 {
                     // draw player
                     this.player.Draw(spriteBatch);
-                    spriteBatch.Draw(playerbox, p.getRectangle(),Color.White);
+
+                    // DEBUG draws rects around player
+                    //spriteBatch.Draw(playerbox, p.getRectangle(),Color.White);
 
                     // draw something above player
                     spriteBatch.DrawString(font_S, "Hit: " + p.hitCount.ToString(), this.player.Position + new Vector2(-40, -40), Color.PeachPuff);
@@ -175,7 +177,8 @@ namespace Spacestro.Screen
                 if (en.Active)
                 {
                     spriteBatch.Draw(ufoTexture, en.getNextLerpPosition(), null, Color.White, 0, new Vector2((float)(ufoTexture.Width / 2), (float)(ufoTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
-                    spriteBatch.Draw(ufobox, en.getRectangle(), Color.White);
+                    // DEBUG draws rects around UFO
+                    //spriteBatch.Draw(ufobox, en.getRectangle(), Color.White);
                 }
             }
 

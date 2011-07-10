@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Spacestro.Cloud.Library;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections;
 
 namespace Spacestro.Entities
 {
@@ -25,6 +26,9 @@ namespace Spacestro.Entities
         public int FireRate { get; set; }
         public int firecounter = 0;
         public int hitCount = 0;
+
+        public Dictionary<string, int> collidedWith = new Dictionary<string,int>();
+        private List<string> removeCollidedList = new List<string>();
 
         public Texture2D playerTexture;
 
@@ -171,6 +175,15 @@ namespace Spacestro.Entities
             return MathHelper.Lerp(this.Rotation, this.PrevRotation, currentSmoothing);
         }
 
+        public bool canCollide(string str)
+        {
+            if (collidedWith.ContainsKey(str))
+            {
+                return false;
+            }
+            else { return true; }
+        }
+
         public bool canShoot()
         {
             if (this.firecounter == 0)
@@ -180,6 +193,31 @@ namespace Spacestro.Entities
             else
             {
                 return false;
+            }
+        }
+
+        public void tickDownCollidedWithList()
+        {
+            if (collidedWith.Count != 0)
+            {
+                for (int i = 0; i < collidedWith.Count; i++)
+                {
+                    string key = collidedWith.ElementAt(i).Key;
+                    collidedWith[key]--;
+
+                    if (collidedWith[key] == 0)
+                    {
+                        removeCollidedList.Add(key);
+                    }
+                }
+
+                if (removeCollidedList.Count != 0)
+                {
+                    foreach (string str in removeCollidedList)
+                    {
+                        collidedWith.Remove(str);
+                    }
+                }
             }
         }
 
