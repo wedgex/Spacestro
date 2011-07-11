@@ -63,11 +63,12 @@ namespace Spacestro.Cloud
 
         public List<Player> playerList;
         public List<Projectile> projectiles;
+        public List<Enemy> enemyList;
+
         public List<Projectile> removeProjList;
         public List<Collision> collisionList;
-
-        public List<Enemy> enemyList;
         public List<Enemy> removeEnemyList;
+
         private int maxEnemies = 10;
         private int aggroRange = 500;
 
