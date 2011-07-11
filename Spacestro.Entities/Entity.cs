@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Spacestro.Entities
 {
-    class Entity
+    public class Entity
     {
         public float currentSmoothing = 0;
         public float framesBetweenUpdates = 3;
