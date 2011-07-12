@@ -28,7 +28,7 @@ namespace Spacestro.Cloud
             config.Port = port;
             config.NetworkThreadName = "Cloud server thread";
             this.server = new NetServer(config);
-            
+
 
             cloudGC = new CloudGameController();
 
@@ -40,7 +40,7 @@ namespace Spacestro.Cloud
         public void Stop()
         {
             this.cloudGC.Stop();
-            this.running = false;            
+            this.running = false;
         }
 
         public void Start()
@@ -82,7 +82,7 @@ namespace Spacestro.Cloud
                             {
                                 // closing client makes it timeout and after a few seconds sends this message?
                                 Console.WriteLine(msg.SenderConnection.Tag.ToString() + " disconnected!");
-                                
+
                                 disconnectEvent = true;
                                 if (this.cloudGC.pList.TryGetValue(msg.SenderConnection.RemoteUniqueIdentifier, out val))
                                 {
@@ -140,7 +140,7 @@ namespace Spacestro.Cloud
                             }
 
                             // tell player of the bullets
-                            foreach (Projectile proj in this.cloudGC.projectiles)
+                            foreach (Projectile proj in this.cloudGC.getProjectileListCopy())
                             {
                                 if (proj.Active)
                                 {
@@ -156,52 +156,47 @@ namespace Spacestro.Cloud
                             }
 
                             // tell player of the enemies
-                            if (this.cloudGC.enemyList.Count != 0)
+                            foreach (Enemy enemy in this.cloudGC.getEnemyListCopy())
                             {
-                                foreach (Enemy enemy in this.cloudGC.enemyList)
-                                {
-                                    NetOutgoingMessage sendMsg = server.CreateMessage();
-                                    sendMsg.Write((byte)11);
-                                    sendMsg.Write((byte)enemy.ID);
-                                    sendMsg.Write(enemy.Position.X);
-                                    sendMsg.Write(enemy.Position.Y);
-                                    sendMsg.Write(enemy.Rotation);
-                                    server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
-                                }
+                                NetOutgoingMessage sendMsg = server.CreateMessage();
+                                sendMsg.Write((byte)11);
+                                sendMsg.Write((byte)enemy.ID);
+                                sendMsg.Write(enemy.Position.X);
+                                sendMsg.Write(enemy.Position.Y);
+                                sendMsg.Write(enemy.Rotation);
+                                server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
                             }
 
                             // tell player of collisions
-                            if (this.cloudGC.collisionList.Count != 0)
+                            foreach (Collision c in this.cloudGC.getCollisionListCopy())
                             {
-                                foreach (Collision c in this.cloudGC.collisionList)
-                                { 
-                                    NetOutgoingMessage sendMsg = server.CreateMessage();
-                                    sendMsg.Write((byte)15); // packet id
-                                    sendMsg.Write((byte)c.CID); // collision id
-                                    
-                                    if (c.CID == 1) // player on player
-                                    {
-                                        sendMsg.Write(c.player1.Name);
-                                        sendMsg.Write(c.player2.Name);
-                                    }
-                                    else if (c.CID == 2) // player on bullet
-                                    {
-                                        sendMsg.Write(c.player1.Name);
-                                        sendMsg.Write((byte)c.projectile.ID);
-                                    }
-                                    else if (c.CID == 3) // player on enemy
-                                    {
-                                        sendMsg.Write(c.player1.Name);
-                                        sendMsg.Write(c.enemy.ID);
-                                    }
-                                    else if (c.CID == 4) // enemy on bullet
-                                    {
-                                        sendMsg.Write((byte)c.enemy.ID);
-                                        sendMsg.Write((byte)c.projectile.ID);
-                                    }
-                                    server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
+                                NetOutgoingMessage sendMsg = server.CreateMessage();
+                                sendMsg.Write((byte)15); // packet id
+                                sendMsg.Write((byte)c.CID); // collision id
+
+                                if (c.CID == 1) // player on player
+                                {
+                                    sendMsg.Write(c.player1.Name);
+                                    sendMsg.Write(c.player2.Name);
                                 }
+                                else if (c.CID == 2) // player on bullet
+                                {
+                                    sendMsg.Write(c.player1.Name);
+                                    sendMsg.Write((byte)c.projectile.ID);
+                                }
+                                else if (c.CID == 3) // player on enemy
+                                {
+                                    sendMsg.Write(c.player1.Name);
+                                    sendMsg.Write(c.enemy.ID);
+                                }
+                                else if (c.CID == 4) // enemy on bullet
+                                {
+                                    sendMsg.Write((byte)c.enemy.ID);
+                                    sendMsg.Write((byte)c.projectile.ID);
+                                }
+                                server.SendMessage(sendMsg, connection, NetDeliveryMethod.Unreliable);
                             }
+
 
                             // inform player someone disconnected
                             if (disconnectEvent)
@@ -213,8 +208,6 @@ namespace Spacestro.Cloud
                             }
                         }
                     }
-
-                    this.cloudGC.clearCollisionsList();
 
                     if (disconnectEvent)
                     {
@@ -228,7 +221,7 @@ namespace Spacestro.Cloud
                 Thread.Sleep(1);
             }
 
-            this.server.Shutdown("Server stopping.");            
+            this.server.Shutdown("Server stopping.");
         }
 
         protected void handleMessage(NetIncomingMessage msg)

@@ -61,13 +61,14 @@ namespace Spacestro.Cloud
 
         Random random = new Random((int)NetTime.Now);
 
+        // TODO [poem] make thread safe
         public List<Player> playerList;
         public List<Projectile> projectiles;
         public List<Enemy> enemyList;
-
-        public List<Projectile> removeProjList;
         public List<Collision> collisionList;
-        public List<Enemy> removeEnemyList;
+
+        private List<Projectile> removeProjList;
+        private List<Enemy> removeEnemyList;
 
         private int maxEnemies = 10;
         private int aggroRange = 500;
@@ -244,40 +245,37 @@ namespace Spacestro.Cloud
             }
         }
 
-        public void clearCollisionsList()
-        {
-            collisionList = new List<Collision>();
-        }
-
-
         public void addPlayer(String name, long remoteID)
         {
-            Player newP = new Player();
-            newP.Name = name;
-            playerList.Add(newP);
-            pList.Add(remoteID, name);
+            lock (this.playerList)
+            {
+                Player newP = new Player();
+                newP.Name = name;
+                playerList.Add(newP);
+                pList.Add(remoteID, name);
+            }
         }
 
         public void removePlayer(String name, long remoteID)
         {
-            foreach (Player player in playerList)
+            Player tempPlayer = getPlayer(name);
+            lock (this.playerList)
             {
-                if (player.Name.Equals(name))
-                {
-                    playerList.Remove(player);
-                    break;
-                }
+                this.playerList.Remove(tempPlayer);
+                pList.Remove(remoteID);
             }
-            pList.Remove(remoteID);
         }
 
         public Player getPlayer(String name)
         {
-            foreach (Player player in playerList)
+            lock (this.playerList)
             {
-                if (player.Name.Equals(name))
+                foreach (Player player in this.playerList)
                 {
-                    return player;
+                    if (player.Name.Equals(name))
+                    {
+                        return player;
+                    }
                 }
             }
 
@@ -286,39 +284,27 @@ namespace Spacestro.Cloud
 
         public void handleInputState(InputState inState, String name)
         {
-            foreach (Player player in playerList)
-            {
-                if (player.Name.Equals(name))
-                {
-                    player.handleInputState(inState);
+            getPlayer(name).handleInputState(inState);
 
-                    if (inState.Space)
-                    {
-                        this.createBullet(player);
-                    }
-                    break;
-                }
+            if (inState.Space)
+            {
+                this.createBullet(getPlayer(name));
             }
         }
 
         public void move(String name)
         {
-            foreach (Player player in playerList)
-            {
-                if (player.Name.Equals(name))
-                {
-                    player.Move();
-                    break;
-                }
-            }
-
+            getPlayer(name).Move();
         }
 
         public void createBullet(Player player)
         {
             if (player.canShoot())
             {
-                projectiles.Add(new Projectile(player.Position, player.Rotation, this.bulletkey, player.Name));
+                lock (this.projectiles)
+                {
+                    projectiles.Add(new Projectile(player.Position, player.Rotation, this.bulletkey, player.Name));
+                }
                 player.firecounter = player.FireRate;
                 this.bulletkey++;
             }
@@ -426,6 +412,53 @@ namespace Spacestro.Cloud
             {
                 player.tickDownCollidedWithList();
             }
+        }
+
+        // THREAD SAFETY ALL UP IN THIS BITCH
+        //public List<Player> playerList;
+        //public List<Projectile> projectiles;
+        //public List<Enemy> enemyList;
+        //public List<Collision> collisionList;
+
+        public List<Player> getPlayerListCopy()
+        {
+            List<Player> copy;
+            lock (this.playerList)
+            {
+                copy = this.playerList.ToList();
+            }
+            return copy;
+        }
+
+        public List<Projectile> getProjectileListCopy()
+        {
+            List<Projectile> copy;
+            lock (this.playerList)
+            {
+                copy = this.projectiles.ToList();
+            }
+            return copy;
+        }
+
+        public List<Enemy> getEnemyListCopy()
+        {
+            List<Enemy> copy;
+            lock (this.enemyList)
+            {
+                copy = this.enemyList.ToList();
+            }
+            return copy;
+        }
+
+        public List<Collision> getCollisionListCopy()
+        {
+            List<Collision> copy;
+            lock (this.collisionList)
+            {
+                copy = this.collisionList.ToList();
+                this.collisionList.Clear();
+            }
+            return copy;
         }
     }
 }

@@ -152,7 +152,11 @@ namespace Spacestro
                             break;
                         case 2: // player on bullet
                             this.GameController.getPlayer(msg.ReadString()).getHit();
-                            this.GameController.getProjectile(msg.ReadByte()).Active = false;
+                            int projID = msg.ReadByte();
+                            if (this.GameController.inProjectileList(projID))
+                            {
+                                this.GameController.getProjectile(projID).Active = false;
+                            }
                             break;
                         case 3: // player on enemy
                             // same as case 1
