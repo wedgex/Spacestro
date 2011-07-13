@@ -61,7 +61,6 @@ namespace Spacestro.Cloud
 
         Random random = new Random((int)NetTime.Now);
 
-        // TODO [poem] make thread safe
         public List<Player> playerList;
         public List<Projectile> projectiles;
         public List<Enemy> enemyList;
@@ -278,7 +277,6 @@ namespace Spacestro.Cloud
                     }
                 }
             }
-
             return null;
         }
 

@@ -9,14 +9,14 @@ using System.Collections.Generic;
 namespace Spacestro
 {
     class CloudMessenger
-    {        
+    {
         private string svrID = "";
         private NetClient netClient;
-        
+
         public GameController GameController { get; private set; }
         public string ClientID { get; private set; }
-        
-        public bool Connected 
+
+        public bool Connected
         {
             get
             {
@@ -94,80 +94,53 @@ namespace Spacestro
                     // not in list yet so we need to create a new player entity
                     if (!this.GameController.inPlayerList(svrID))
                     {
-                        Player newP = new Player();
-                        newP.Name = svrID;
-                        this.GameController.addPlayer(newP);
+                        this.GameController.addPlayer(svrID);
                     }
                     // in list already so just update
-                    else if (this.GameController.inPlayerList(svrID))
+                    else
                     {
-                        if (this.ClientID == svrID) // this is us!
-                        {
-                            // cool story bro!
-                        }
-
-                        this.GameController.getPlayer(svrID).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
+                        this.GameController.updatePlayerServerPosition(svrID, msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
                     }
                     break;
 
                 case 10: // projectile
                     int key = msg.ReadByte();
-                    if (this.GameController.inProjectileList(key))
-                    {
-                        this.GameController.getProjectile(key).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
-                    }
-                    else
-                    {
-                        float f1, f2, f3;
-                        f1 = msg.ReadFloat();
-                        f2 = msg.ReadFloat();
-                        f3 = msg.ReadFloat();
-                        this.GameController.projectiles.Add(new Projectile(new Vector2(f1, f2), f3, key, msg.ReadString()));
-                    }
+                    float x = msg.ReadFloat();
+                    float y = msg.ReadFloat();
+                    float rot = msg.ReadFloat();
+                    this.GameController.updateOrCreateProjectile(key, x, y, rot, msg.ReadString());
                     break;
 
                 case 11: // enemy
                     int ekey = msg.ReadByte();
-                    if (this.GameController.inEnemyList(ekey))
-                    {
-                        this.GameController.getEnemy(ekey).setSvrPosRot(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
-                    }
-                    else
-                    {
-                        float f1, f2, f3;
-                        f1 = msg.ReadFloat();
-                        f2 = msg.ReadFloat();
-                        f3 = msg.ReadFloat();
-                        this.GameController.enemies.Add(new Enemy(new Vector2(f1, f2), ekey));
-                    }
+                    float ex = msg.ReadFloat();
+                    float ey = msg.ReadFloat();
+                    float erot = msg.ReadFloat();
+                    this.GameController.updateOrCreateEnemy(ekey, ex, ey, erot);
                     break;
 
                 case 15: // collision
                     int tempID = msg.ReadByte();
                     switch (tempID)
                     {
-                        case 1: // player on player
+                        case 1: 
+                            // player on player
                             // we don't mess with velocity here since we get that as seperate packet.
                             // we'll probably use this spot for animation or whatever.
                             break;
-                        case 2: // player on bullet
-                            this.GameController.getPlayer(msg.ReadString()).getHit();
-                            int projID = msg.ReadByte();
-                            if (this.GameController.inProjectileList(projID))
-                            {
-                                this.GameController.getProjectile(projID).Active = false;
-                            }
+                        case 2: 
+                            // player on bullet
+                            this.GameController.hitPlayer(msg.ReadString());
+                            this.GameController.destroyBullet(msg.ReadByte());
                             break;
-                        case 3: // player on enemy
+                        case 3: 
+                            // player on enemy
                             // same as case 1
                             break;
-                        case 4: // enemy on bullet
-                            this.GameController.getEnemy(msg.ReadByte()).getHit();
-                            int pid = msg.ReadByte();
-                            if (this.GameController.inProjectileList(pid) && pid != 0)
-                            {
-                                this.GameController.getProjectile(pid).Active = false;
-                            }
+                        case 4: 
+                            // enemy on bullet
+                            this.GameController.hitEnemy(msg.ReadByte());
+                            this.GameController.destroyBullet(msg.ReadByte());
                             break;
                         default:
                             break;

@@ -116,6 +116,7 @@ namespace Spacestro.Screen
             }
         }
 
+        // TODO [poem] THREAD SAFE FUCK ME!
         public override void Draw(GameTime gameTime)
         {
             graphicsDevice.Clear(Color.Black);
@@ -138,7 +139,7 @@ namespace Spacestro.Screen
             spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
                         null, null, null, null, this.cam.getTransformation());
 
-            foreach (Player p in this.cloudMessenger.GameController.playerList)
+            foreach (Player p in this.cloudMessenger.GameController.getPlayerListCopy())
             {
                 if (p.Name.Equals(this.cloudMessenger.ClientID))  // it's us
                 {
@@ -159,7 +160,7 @@ namespace Spacestro.Screen
                 }
             }
 
-            foreach (Projectile proj in this.cloudMessenger.GameController.projectiles)
+            foreach (Projectile proj in this.cloudMessenger.GameController.getProjectileListCopy())
             {
                 if (proj.Active)
                 {
@@ -172,7 +173,7 @@ namespace Spacestro.Screen
                 }
             }
 
-            foreach (Enemy en in this.cloudMessenger.GameController.enemies)
+            foreach (Enemy en in this.cloudMessenger.GameController.getEnemyListCopy())
             {
                 if (en.Active)
                 {
