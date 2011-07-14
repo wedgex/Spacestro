@@ -57,7 +57,6 @@ namespace Spacestro.Screen
             
             bg1 = content.Load<Texture2D>("bg1");
             bg2 = content.Load<Texture2D>("bg2");
-            asteroid = content.Load<Texture2D>("asteroid");
             playerTexture = content.Load<Texture2D>("player");
             bulletTexture = content.Load<Texture2D>("bullet");
             ufoTexture = content.Load<Texture2D>("UFO");
@@ -67,6 +66,8 @@ namespace Spacestro.Screen
             
             font = content.Load<SpriteFont>("Orbitron");
             font_S = content.Load<SpriteFont>("Orbitron_S");
+
+            asteroid = content.Load<Texture2D>("asteroid");
 
             player.Initialize(playerTexture);
             
@@ -116,28 +117,30 @@ namespace Spacestro.Screen
             }
         }
 
-        // TODO [poem] THREAD SAFE FUCK ME!
         public override void Draw(GameTime gameTime)
         {
             graphicsDevice.Clear(Color.Black);
 
             // first batch containing bg1
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend,
                         SamplerState.LinearWrap, null, null, null, GameMath.getBG1ParallaxTranslation(viewport, cam));
 
             spriteBatch.Draw(bg1, Vector2.Zero, new Rectangle(0, 0, worldWidth, worldHeight), Color.White);
             spriteBatch.End();
 
             // second batch cotaining bg2
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
+            spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend,
                         SamplerState.LinearWrap, null, null, null, GameMath.getBG2ParallaxTranslation(viewport, cam));
 
             spriteBatch.Draw(bg2, Vector2.Zero, new Rectangle(0, 0, worldWidth, worldHeight), Color.White);
             spriteBatch.End();
 
             // third batch containing player and entities
-            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
                         null, null, null, null, this.cam.getTransformation());
+
+            spriteBatch.Draw(asteroid, new Vector2(600, 600), new Rectangle(0, 0, asteroid.Width, asteroid.Height), Color.White);
+            spriteBatch.DrawString(font_S, "Spacestro alpha (milestone 2)", this.cam.Pos - new Vector2(0.5f * viewport.Width, -0.38f * viewport.Height), Color.Yellow, 0, Vector2.Zero, 1.0f, SpriteEffects.None, 1.0f);
 
             foreach (Player p in this.cloudMessenger.GameController.getPlayerListCopy())
             {
@@ -182,10 +185,6 @@ namespace Spacestro.Screen
                     //spriteBatch.Draw(ufobox, en.getRectangle(), Color.White);
                 }
             }
-
-            spriteBatch.DrawString(font_S, "Spacestro alpha (milestone 2)", this.cam.Pos - new Vector2(0.5f * viewport.Width, -0.38f * viewport.Height), Color.Yellow);
-
-            spriteBatch.Draw(asteroid, new Vector2(600, 600), new Rectangle(0, 0, asteroid.Width, asteroid.Height), Color.White);
 
             spriteBatch.End();
         }
