@@ -6,6 +6,14 @@ namespace Spacestro.Entities
 {
     public class Projectile
     {
+        private static int count = 0;
+
+        public static int GetNextKey()
+        {
+            return count++;
+        }
+
+
         public float currentSmoothing = 0;
         public float framesBetweenUpdates = 3;
 
@@ -20,7 +28,7 @@ namespace Spacestro.Entities
         public int TicksAlive { get; set; }
         public int maxTicks { get; set; }
         public int ID { get; set; }
-        public String Shooter { get; set; }
+        public string Shooter { get; set; }
 
         public Texture2D projectileTexture;
         public bool Active;
@@ -32,16 +40,16 @@ namespace Spacestro.Entities
             this.MaxSpeed = 15.0f;
             this.Rotation = 0.0f;
             this.TicksAlive = 0;
-            this.maxTicks = 60;
+            this.maxTicks = 60;            
         }
 
-        public Projectile(Vector2 position, float rotation, int bulletkey, String shooter)
+        public Projectile(Vector2 position, float rotation, int bulletkey, string shooter)
             : this()
         {
+            this.ID = bulletkey;
             this.Position = position;
             this.Rotation = rotation;
-            this.Active = true;
-            this.ID = bulletkey;
+            this.Active = true;            
             this.Shooter = shooter;
             Vector2 tempV = new Vector2(this.Acceleration * (float)Math.Cos(this.Rotation), this.Acceleration * (float)Math.Sin(this.Rotation));
             tempV.Normalize();
@@ -132,7 +140,7 @@ namespace Spacestro.Entities
             this.currentSmoothing = 1;
         }
 
-        public Vector2 getNextLerpPosition()
+        public Vector2 GetNextLerpPosition()
         {
             this.currentSmoothing -= 1.0f / this.framesBetweenUpdates;
             if (this.currentSmoothing < 0)
@@ -140,12 +148,12 @@ namespace Spacestro.Entities
             return Vector2.Lerp(this.Position, this.PrevPosition, currentSmoothing);
         }
 
-        public float getNextLerpRotation()
+        public float GetNextLerpRotation()
         {
             return MathHelper.Lerp(this.Rotation, this.PrevRotation, currentSmoothing);
         }
 
-        public Rectangle getRectangle()
+        public Rectangle GetRectangle()
         {
             return new Rectangle((int)this.Position.X, (int)this.Position.Y, 9, 9);
         }

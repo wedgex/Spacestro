@@ -7,6 +7,7 @@ using Spacestro.Entities;
 using Lidgren.Network;
 using Microsoft.Xna.Framework;
 using Spacestro.Cloud.AI;
+using System.Diagnostics;
 
 namespace Spacestro.Cloud
 {
@@ -71,8 +72,7 @@ namespace Spacestro.Cloud
 
         private int maxEnemies = 10;
         private int aggroRange = 500;
-
-        private int bulletkey = 0;
+        
         private int entitykey = 0;
 
         public Dictionary<long, string> pList;
@@ -116,6 +116,7 @@ namespace Spacestro.Cloud
         // this is where all server side game logic happens every tick
         public void tick()
         {
+            Debug.WriteLine("BulletCount: {0}", this.projectiles.Count);
             updateFireRates();
             updatePlayerCollisionTickers();
             createNewEnemy();
@@ -200,7 +201,7 @@ namespace Spacestro.Cloud
                 {
                     if (proj.Active && !p.Name.Equals(proj.Shooter))
                     {
-                        if (proj.getRectangle().Intersects(p.getRectangle()))
+                        if (proj.GetRectangle().Intersects(p.getRectangle()))
                         {
                             collisionList.Add(new Collision(p, proj));
                             proj.Active = false;
@@ -233,7 +234,7 @@ namespace Spacestro.Cloud
                 {
                     if (proj.Active && !proj.Shooter.Equals("enemy"))
                     {
-                        if (e.getRectangle().Intersects(proj.getRectangle()))
+                        if (e.getRectangle().Intersects(proj.GetRectangle()))
                         {
                             collisionList.Add(new Collision(e, proj));
                             proj.Active = false;
@@ -250,6 +251,8 @@ namespace Spacestro.Cloud
             {
                 Player newP = new Player();
                 newP.Name = name;
+                newP.Weapon = new Weapon ();
+
                 playerList.Add(newP);
                 pList.Add(remoteID, name);
             }
@@ -282,31 +285,28 @@ namespace Spacestro.Cloud
 
         public void handleInputState(InputState inState, String name)
         {
-            getPlayer(name).handleInputState(inState);
-
+            Player player = getPlayer(name);
+            player.handleInputState(inState);
+            
             if (inState.Space)
             {
-                this.createBullet(getPlayer(name));
+                if (player.CanFire())
+                {
+                    lock (this.projectiles)
+                    {
+                        Debug.WriteLine("Firing");
+                        projectiles.Add(player.Fire());
+                    }
+                }
+                
+                //this.createBullet(getPlayer(name));
             }
         }
 
         public void move(String name)
         {
             getPlayer(name).Move();
-        }
-
-        public void createBullet(Player player)
-        {
-            if (player.canShoot())
-            {
-                lock (this.projectiles)
-                {
-                    projectiles.Add(new Projectile(player.Position, player.Rotation, this.bulletkey, player.Name));
-                }
-                player.firecounter = player.FireRate;
-                this.bulletkey++;
-            }
-        }
+        }       
 
         private void enemiesShoot()
         {
@@ -320,9 +320,8 @@ namespace Spacestro.Cloud
                         continue;
 
                     // we can hit player to fire away!
-                    projectiles.Add(new Projectile(e.Position, angletofire, this.bulletkey, "enemy"));
-                    e.firecounter = e.FireRate;
-                    this.bulletkey++;
+                    projectiles.Add(new Projectile(e.Position, angletofire, Projectile.GetNextKey(), "enemy"));
+                    e.firecounter = e.FireRate;                    
                 }
             }
         }
@@ -390,8 +389,9 @@ namespace Spacestro.Cloud
         {
             foreach (Player player in playerList)
             {
-                if (player.firecounter != 0)
-                    player.firecounter--;
+                player.Weapon.UpdateFireCount();
+                //if (player.firecounter != 0)
+                //    player.firecounter--;
             }
 
             if (enemyList.Count != 0)

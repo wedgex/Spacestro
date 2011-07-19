@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Spacestro.Cloud.Library;
 using Spacestro.Entities;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Spacestro.Screen
 {
@@ -167,7 +168,7 @@ namespace Spacestro.Screen
             {
                 if (proj.Active)
                 {
-                    spriteBatch.Draw(bulletTexture, proj.getNextLerpPosition(), null, Color.White, proj.getNextLerpRotation(), new Vector2((float)(bulletTexture.Width / 2), (float)(bulletTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
+                    spriteBatch.Draw(bulletTexture, proj.GetNextLerpPosition(), null, Color.White, proj.GetNextLerpRotation(), new Vector2((float)(bulletTexture.Width / 2), (float)(bulletTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
                     proj.TicksAlive++;
                     if (proj.TicksAlive >= 120)
                     {
@@ -191,6 +192,7 @@ namespace Spacestro.Screen
 
         public override void Update(GameTime gameTime, bool otherScreenHasFocus, bool coveredByOtherScreen)
         {
+            Debug.WriteLine("Projectiles Client side: {0}", this.cloudMessenger.GameController.projectiles.Count);
             HandleNetworkOut();
             HandleNetworkIn();
             HandlePlayerMoving();

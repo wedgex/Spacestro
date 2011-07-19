@@ -11,7 +11,24 @@ namespace Spacestro.Entities
 {
     public class Player : Entity
     {
+        private Weapon weapon;
+
+        public Weapon Weapon 
+        {
+            get
+            {
+                return weapon;
+            }
+            set
+            {
+                // equip the weapon
+                value.Owner = this;
+                this.weapon = value;
+            }
+        }
+
         public string Name { get; set; }  // holds client id at the moment
+        
         public int hitCount = 0;
 
         public Dictionary<string, int> collidedWith = new Dictionary<string,int>();
@@ -29,7 +46,7 @@ namespace Spacestro.Entities
 
             // need to get this from network instead 
             //(doesn't matter right now since network grabs uses this default as well)
-            this.Position = new Vector2(400, 400);
+            this.Position = new Vector2(400, 400);            
         }
 
         public Player(Vector2 position)
@@ -102,6 +119,16 @@ namespace Spacestro.Entities
         public Rectangle getRectangle()
         {
             return new Rectangle((int)(this.Position.X - (25/2)), (int)(this.Position.Y - (20/2)), 25, 20);
+        }
+
+        public Projectile Fire()
+        {
+            return this.weapon.Fire();
+        }
+
+        public bool CanFire()
+        {
+             return (this.Weapon != null) ? this.Weapon.CanFire() : false;
         }
     }
 }
