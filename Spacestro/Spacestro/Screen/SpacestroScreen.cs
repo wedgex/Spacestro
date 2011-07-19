@@ -136,7 +136,7 @@ namespace Spacestro.Screen
             spriteBatch.End();
 
             // third batch containing player and entities
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend,
+            spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend,
                         null, null, null, null, this.cam.getTransformation());
 
             spriteBatch.Draw(asteroid, new Vector2(600, 600), new Rectangle(0, 0, asteroid.Width, asteroid.Height), Color.White);
@@ -168,11 +168,7 @@ namespace Spacestro.Screen
                 if (proj.Active)
                 {
                     spriteBatch.Draw(bulletTexture, proj.getNextLerpPosition(), null, Color.White, proj.getNextLerpRotation(), new Vector2((float)(bulletTexture.Width / 2), (float)(bulletTexture.Height / 2)), 1f, SpriteEffects.None, 0f);
-                    proj.TicksAlive++;
-                    if (proj.TicksAlive >= 120)
-                    {
-                        proj.Active = false;
-                    }
+                    this.cloudMessenger.GameController.tickBullets();
                 }
             }
 

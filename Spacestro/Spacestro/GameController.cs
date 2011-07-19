@@ -12,12 +12,14 @@ namespace Spacestro
         public List<Player> playerList;
         public List<Projectile> projectiles;
         public List<Enemy> enemies;
+        public List<Projectile> removeProjList;
 
         public GameController()
         {
             playerList = new List<Player>();
             projectiles = new List<Projectile>();
             enemies = new List<Enemy>();
+            removeProjList = new List<Projectile>();
         }
 
         public List<Player> getPlayerListCopy()
@@ -189,6 +191,28 @@ namespace Spacestro
             {
                 if (e.ID == id)
                     e.getHit();
+            }
+        }
+
+        public void tickBullets()
+        {
+            lock (this.projectiles)
+            {
+                foreach (Projectile proj in projectiles)
+                {
+                    proj.TicksAlive++;
+                    if (proj.TicksAlive >= 120)
+                    {
+                        removeProjList.Add(proj);
+                        proj.Active = false;
+                    }
+                }
+
+                foreach (Projectile p in removeProjList)
+                {
+                    projectiles.Remove(p);
+                }
+                removeProjList.Clear();
             }
         }
 

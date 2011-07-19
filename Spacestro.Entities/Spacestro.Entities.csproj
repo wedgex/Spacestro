@@ -97,6 +97,7 @@
     <Compile Include="Projectile.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shield.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Spacestro.Cloud.Library\Spacestro.Cloud.Library.csproj">
