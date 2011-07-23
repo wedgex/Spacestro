@@ -17,11 +17,32 @@ namespace Spacestro.Entities
         public float MaxSpeed { get; set; }
         public float Rotation { get; set; }
         public float PrevRotation { get; set; }
+        public int Hitpoints { get; set; }
+        public Shield EquippedShield { get; set; }
 
         public int FireRate { get; set; }
         public int firecounter = 0;
 
         public Texture2D texture;
+
+        // calculates damage taken and takes shield into account
+        public int takeDamage(int damage)
+        {
+            if (this.EquippedShield == null)
+            {
+                this.Hitpoints -= damage;
+                if (this.Hitpoints < 0)
+                    this.Hitpoints = 0;
+                return this.Hitpoints;
+            }
+            else
+            {
+                this.Hitpoints -= this.EquippedShield.absorbDamage(damage);
+                if (this.Hitpoints < 0)
+                    this.Hitpoints = 0;
+                return this.Hitpoints;
+            }
+        }
 
         public int Width
         {
