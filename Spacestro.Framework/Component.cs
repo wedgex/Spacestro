@@ -5,8 +5,13 @@ using System.Text;
 
 namespace Spacestro.Framework
 {
-    public class Component
+    public abstract class Component
     {
         public string Name { get; set; }
+
+        public Component(string name)
+        {
+            this.Name = name;
+        }
     }
 }

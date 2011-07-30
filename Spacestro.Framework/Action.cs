@@ -5,10 +5,16 @@ using System.Text;
 
 namespace Spacestro.Framework
 {
-    public class Action
+    public abstract class Action
     {
-        public string Name { get; set; }
+
+        public string Name { get;  set; }
         public Entity Entity { get; set; }
-        public virtual void Do() { }
+        public abstract void Do();
+
+        public Action(string name)
+        {
+            this.Name = name;
+        }
     }
 }

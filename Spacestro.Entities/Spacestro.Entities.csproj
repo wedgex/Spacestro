@@ -92,6 +92,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\Move.cs" />
+    <Compile Include="Components\Spacial.cs" />
+    <Compile Include="Components\Physics.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Projectile.cs" />
@@ -105,7 +108,12 @@
       <Project>{486DE6DE-179B-4308-BECF-FCBADD1C07E7}</Project>
       <Name>Spacestro.Cloud.Library</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Spacestro.Framework\Spacestro.Framework.csproj">
+      <Project>{38C1AB8D-C0B5-4AB7-A9ED-AC11C85E41E0}</Project>
+      <Name>Spacestro.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
   <!--

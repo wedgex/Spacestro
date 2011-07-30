@@ -7,62 +7,64 @@ namespace Spacestro.Framework
 {
     public class Entity
     {
-        Dictionary<string, Component> components = new Dictionary<string, Component>();
-        Dictionary<string, Action> actions = new Dictionary<string, Action>();
+        public string Id { get; set; }
+
+        private Dictionary<string, Component> components = new Dictionary<string, Component>();
+        private Dictionary<string, Action> actions = new Dictionary<string, Action>();
 
         /// <summary>
-        /// Adds the component to the entity's components dictionary using the component's name as the key.
+        /// Adds the IComponent to the entity's IComponents dictionary using the IComponent's name as the key.
         /// </summary>
-        /// <param name="component">The component to add.</param>
-        public void AddComponent(Component component)
+        /// <param name="IComponent">The IComponent to add.</param>
+        public void AddIComponent(Component component)
         {
             this.components.Add(component.Name, component);
         }
 
         /// <summary>
-        /// Remove the component with the given name from the entity's component dictionary.
+        /// Remove the IComponent with the given name from the entity's IComponent dictionary.
         /// </summary>
-        /// <param name="name">The name of the component to remove.</param>
-        public void RemoveComponent(string name)
+        /// <param name="name">The name of the IComponent to remove.</param>
+        public void RemoveIComponent(string name)
         {
             this.components.Remove(name);
         }
 
         /// <summary>
-        /// Tries to find a component with the given name and of type T.
+        /// Tries to find a IComponent with the given name and of type T.
         /// </summary>
-        /// <typeparam name="T">The type of component being searched for.</typeparam>
-        /// <param name="name">Name of the component to get.</param>
-        /// <returns>The component, null if no component with that name was found or if it could not be cast to the desired type.</returns>
-        public T GetComponent<T>(string name) where T : Component
+        /// <typeparam name="T">The type of IComponent being searched for.</typeparam>
+        /// <param name="name">Name of the IComponent to get.</param>
+        /// <returns>The IComponent, null if no IComponent with that name was found or if it could not be cast to the desired type.</returns>
+        public T GetIComponent<T>(string name) where T : Component
         {
             return (this.components.ContainsKey(name)) ? components[name] as T : null;
         }
 
         /// <summary>
-        /// Add the action to the entity's actions dictionary using the action's name as the key.
+        /// Add the IAction to the entity's IActions dictionary using the IAction's name as the key.
         /// </summary>
-        /// <param name="action">The action to add.</param>
-        public void AddAction(Action action)
+        /// <param name="action">The IAction to add.</param>
+        public void AddIAction(Action action)
         {
             action.Entity = this;
             this.actions.Add(action.Name, action);
         }
 
         /// <summary>
-        /// Remove the action with the given name from the entity's action dictionary.
+        /// Remove the IAction with the given name from the entity's IAction dictionary.
         /// </summary>
         /// <param name="name">The name of the actoin to remove.</param>
-        public void RemoveAction(string name)
+        public void RemoveIAction(string name)
         {
             this.actions.Remove(name);
         }
 
         /// <summary>
-        /// Attempt to call the action with the given name. If not is found, nothing happens.
+        /// Attempt to call the IAction with the given name. If not is found, nothing happens.
         /// </summary>
-        /// <param name="name">Name of the action to call.</param>
-        public void DoAction(string name)
+        /// <param name="name">Name of the IAction to call.</param>
+        public void DoIAction(string name)
         {
             if (this.actions.ContainsKey(name))
             {
