@@ -10,13 +10,13 @@ namespace Spacestro.Framework
         public string Id { get; set; }
 
         private Dictionary<string, Component> components = new Dictionary<string, Component>();
-        private Dictionary<string, Action> actions = new Dictionary<string, Action>();
+        private Dictionary<string, EntityAction> actions = new Dictionary<string, EntityAction>();
 
         /// <summary>
         /// Adds the IComponent to the entity's IComponents dictionary using the IComponent's name as the key.
         /// </summary>
         /// <param name="IComponent">The IComponent to add.</param>
-        public void AddIComponent(Component component)
+        public void AddComponent(Component component)
         {
             this.components.Add(component.Name, component);
         }
@@ -25,7 +25,7 @@ namespace Spacestro.Framework
         /// Remove the IComponent with the given name from the entity's IComponent dictionary.
         /// </summary>
         /// <param name="name">The name of the IComponent to remove.</param>
-        public void RemoveIComponent(string name)
+        public void RemoveComponent(string name)
         {
             this.components.Remove(name);
         }
@@ -36,7 +36,7 @@ namespace Spacestro.Framework
         /// <typeparam name="T">The type of IComponent being searched for.</typeparam>
         /// <param name="name">Name of the IComponent to get.</param>
         /// <returns>The IComponent, null if no IComponent with that name was found or if it could not be cast to the desired type.</returns>
-        public T GetIComponent<T>(string name) where T : Component
+        public T GetComponent<T>(string name) where T : Component
         {
             return (this.components.ContainsKey(name)) ? components[name] as T : null;
         }
@@ -45,7 +45,7 @@ namespace Spacestro.Framework
         /// Add the IAction to the entity's IActions dictionary using the IAction's name as the key.
         /// </summary>
         /// <param name="action">The IAction to add.</param>
-        public void AddIAction(Action action)
+        public void AddAction(EntityAction action)
         {
             action.Entity = this;
             this.actions.Add(action.Name, action);
@@ -55,7 +55,7 @@ namespace Spacestro.Framework
         /// Remove the IAction with the given name from the entity's IAction dictionary.
         /// </summary>
         /// <param name="name">The name of the actoin to remove.</param>
-        public void RemoveIAction(string name)
+        public void RemoveAction(string name)
         {
             this.actions.Remove(name);
         }
@@ -64,7 +64,7 @@ namespace Spacestro.Framework
         /// Attempt to call the IAction with the given name. If not is found, nothing happens.
         /// </summary>
         /// <param name="name">Name of the IAction to call.</param>
-        public void DoIAction(string name)
+        public void DoAction(string name)
         {
             if (this.actions.ContainsKey(name))
             {
